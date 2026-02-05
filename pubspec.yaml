@@ -36,11 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # State management
-  flutter_bloc: 
-  bloc: 
+  flutter_bloc: any
+  bloc: any
   
   # Supabase
-  supabase_flutter: 
+  supabase_flutter: any
   
   # Google & Apple Sign-In
   google_sign_in: ^6.2.1

@@ -9,7 +9,7 @@ class EnvironmentConfig {
     return dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   }
 
-  static bool isProduction {
+  static bool isProduction() {
     return dotenv.env['ENVIRONMENT'] == 'production';
   }
 }
