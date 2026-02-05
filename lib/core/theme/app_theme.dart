@@ -3,11 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Color Palette
-  static const Color backgroundColor = Color(0xFFF5F1ED); // Soft beige/warm off-white
+  static const Color backgroundColor = Color(
+    0xFFF5F1ED,
+  ); // Soft beige/warm off-white
   static const Color primaryColor = Color(0xFF5B7C7E); // Muted teal
   static const Color accentColor = Color(0xFFE8B4A8); // Soft peach
-  static const Color buttonDarkColor = Color(0xFF32575A); // Dark teal for buttons
-  
+  static const Color buttonDarkColor = Color(
+    0xFF32575A,
+  ); // Dark teal for buttons
+
   // Secondary colors
   static const Color cardBackground = Color(0xFFFFFBF7);
   static const Color textPrimary = Color(0xFF2C2C2C);
@@ -40,7 +44,7 @@ class AppTheme {
       onBackground: textPrimary,
       onSurface: textPrimary,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: cardBackground,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -54,13 +58,8 @@ class AppTheme {
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        textStyle: GoogleFonts.inter(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -68,23 +67,15 @@ class AppTheme {
         foregroundColor: primaryColor,
         side: const BorderSide(color: primaryColor, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        textStyle: GoogleFonts.inter(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        textStyle: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
+        textStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500),
       ),
     ),
     textTheme: TextTheme(

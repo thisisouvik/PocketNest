@@ -86,7 +86,8 @@ class _AuthScreenState extends State<AuthScreen>
                             ),
                             TextSpan(
                               text: 'Simplified',
-                              style: GoogleFonts.akayadkanadaka(
+                              style: TextStyle(
+                                fontFamily: 'AkayadKanadaka',
                                 fontSize: 32,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.primaryColor,
