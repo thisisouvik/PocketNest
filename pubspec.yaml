@@ -96,18 +96,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: AkayadKanadaka
+    - family: AkayaKanadaka
       fonts:
-        - asset: assets/fonts/AkayadKanadaka-Regular.ttf
-    - family: PlayfairDisplay
-      fonts:
-        - asset: assets/fonts/PlayfairDisplay-Regular.ttf
-        - asset: assets/fonts/PlayfairDisplay-Bold.ttf
-          weight: 700
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
+        - asset: lib/assets/fonts/AkayaKanadaka-Regular.ttf
