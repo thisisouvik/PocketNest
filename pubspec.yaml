@@ -99,3 +99,9 @@ flutter:
     - family: AkayaKanadaka
       fonts:
         - asset: lib/assets/fonts/AkayaKanadaka-Regular.ttf
+    - family: Inter
+      fonts:
+        - asset: lib/assets/fonts/Inter-Variable.ttf
+    - family: Playfair Display
+      fonts:
+        - asset: lib/assets/fonts/PlayfairDisplay-Variable.ttf

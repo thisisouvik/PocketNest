@@ -55,7 +55,7 @@ class _AuthScreenState extends State<AuthScreen>
             children: [
               // Logo at top
               SvgPicture.asset(
-                'assets/images/branding/appTextLogo.svg',
+                'lib/assets/images/branding/appTextLogo.svg',
                 height: 50,
               ),
               const SizedBox(height: 48),
@@ -153,9 +153,7 @@ class _AuthScreenState extends State<AuthScreen>
                           // TODO: Implement phone auth
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text(
-                                'Phone authentication coming soon',
-                              ),
+                              content: Text('Phone authentication coming soon'),
                             ),
                           );
                         },
@@ -272,11 +270,7 @@ class _AuthScreenState extends State<AuthScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[
-                  FaIcon(
-                    icon,
-                    color: textColor,
-                    size: 20,
-                  ),
+                  FaIcon(icon, color: textColor, size: 20),
                   const SizedBox(width: 12),
                 ],
                 Text(

@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 child: ClipOval(
                   child: SvgPicture.asset(
-                    'assets/splash/splash_women.svg',
+                    'lib/assets/images/splash/splash_women.svg',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -73,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen>
               const SizedBox(height: 48),
               // PocketNest text logo
               SvgPicture.asset(
-                'assets/splash/splashTextStyle.svg',
+                'lib/assets/images/splash/splashTextStyle.svg',
                 height: 60,
               ),
             ],

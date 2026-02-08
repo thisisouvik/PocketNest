@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pocketnest/config/supabase_config.dart';
 import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
@@ -9,6 +10,9 @@ import 'package:pocketnest/features/splash/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Disable runtime font fetching — use only bundled/local fonts
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   // Load environment variables
   await dotenv.load(fileName: '.env');
