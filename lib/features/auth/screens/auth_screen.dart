@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
+import 'package:pocketnest/core/utils/app_assets.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -48,200 +49,193 @@ class _AuthScreenState extends State<AuthScreen>
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // Logo at top
-              SvgPicture.asset(
-                'lib/assets/images/branding/appTextLogo.svg',
-                height: 50,
-              ),
-              const SizedBox(height: 48),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final sheetHeight = constraints.maxHeight * 0.62;
 
-              // Animated content
-              FadeTransition(
-                opacity: _slideAnimation,
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.2),
-                    end: Offset.zero,
-                  ).animate(_slideAnimation),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Headline
-                      RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
+            return Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 20,
+                      left: 24,
+                      right: 24,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgPicture.asset(AppAssets.appTextLogo, height: 44),
+                        const SizedBox(height: 14),
+                        Column(
                           children: [
-                            TextSpan(
-                              text: 'Family Finances\n',
-                              style: GoogleFonts.playfairDisplay(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w700,
+                            Text(
+                              'Family Finances',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Alkalami',
+                                fontSize: 34,
+                                fontWeight: FontWeight.w500,
                                 color: AppTheme.textPrimary,
                               ),
                             ),
-                            TextSpan(
-                              text: 'Simplified',
+                            Text(
+                              'Simplified',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontFamily: 'AkayaKanadaka',
-                                fontSize: 32,
+                                fontSize: 34,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.primaryColor,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Welcome Card Container
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: AppTheme.cardBackground,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: AppTheme.borderColor,
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Welcome to PocketNest',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.playfairDisplay(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.textPrimary,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Open Your Nest.',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: AppTheme.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Auth Buttons
-                      // Continue with Phone
-                      _buildAuthButton(
-                        context,
-                        label: 'Continue with Phone',
-                        backgroundColor: AppTheme.buttonDarkColor,
-                        textColor: Colors.white,
-                        onPressed: () {
-                          // TODO: Implement phone auth
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Phone authentication coming soon'),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Continue with Google
-                      _buildAuthButton(
-                        context,
-                        label: 'Continue with Google',
-                        backgroundColor: Colors.white,
-                        textColor: Colors.black,
-                        icon: FontAwesomeIcons.google,
-                        onPressed: () {
-                          context.read<AppFlowCubit>().loginWithGoogle();
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Continue with Apple
-                      _buildAuthButton(
-                        context,
-                        label: 'Continue with Apple',
-                        backgroundColor: Colors.black,
-                        textColor: Colors.white,
-                        icon: FontAwesomeIcons.apple,
-                        onPressed: () {
-                          context.read<AppFlowCubit>().loginWithApple();
-                        },
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 48),
-
-              // Terms & Conditions at bottom
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text.rich(
-                      textAlign: TextAlign.center,
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'By continuing, you agree to our ',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppTheme.textSecondary,
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: sheetHeight,
+                    width: double.infinity,
+                    child: FadeTransition(
+                      opacity: _slideAnimation,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 0.12),
+                          end: Offset.zero,
+                        ).animate(_slideAnimation),
+                        child: _NestSheet(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(24, 44, 24, 24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Welcome to the PocketNest',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.playfairDisplay(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Open Your Nest',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                _buildAuthButton(
+                                  context,
+                                  label: 'Continue with Phone',
+                                  backgroundColor: AppTheme.buttonDarkColor,
+                                  textColor: Colors.white,
+                                  onPressed: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Phone authentication coming soon',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 14),
+                                _buildAuthButton(
+                                  context,
+                                  label: 'Continue with Google',
+                                  backgroundColor: Colors.white,
+                                  textColor: Colors.black,
+                                  icon: FontAwesomeIcons.google,
+                                  onPressed: () {
+                                    context
+                                        .read<AppFlowCubit>()
+                                        .loginWithGoogle();
+                                  },
+                                ),
+                                const SizedBox(height: 14),
+                                _buildAuthButton(
+                                  context,
+                                  label: 'Continue with Apple',
+                                  backgroundColor: Colors.black,
+                                  textColor: Colors.white,
+                                  icon: FontAwesomeIcons.apple,
+                                  onPressed: () {
+                                    context
+                                        .read<AppFlowCubit>()
+                                        .loginWithApple();
+                                  },
+                                ),
+                                const SizedBox(height: 18),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text.rich(
+                                    textAlign: TextAlign.center,
+                                    TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text:
+                                              'By continuing, you agree to our ',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Terms & Conditions',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.primaryColor,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: ' and ',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: 'Privacy Policy',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.primaryColor,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          TextSpan(
-                            text: 'Terms & Conditions',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.primaryColor,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' and ',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppTheme.textSecondary,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'Privacy Policy',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.primaryColor,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -255,15 +249,27 @@ class _AuthScreenState extends State<AuthScreen>
     IconData? icon,
     required VoidCallback onPressed,
   }) {
-    return SizedBox(
-      width: double.infinity,
+    return Container(
       height: 56,
-      child: Material(
+      decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
+        border: backgroundColor == Colors.white
+            ? Border.all(color: AppTheme.borderColor.withOpacity(0.6))
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -277,7 +283,7 @@ class _AuthScreenState extends State<AuthScreen>
                   label,
                   style: GoogleFonts.inter(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: textColor,
                   ),
                 ),
@@ -287,5 +293,53 @@ class _AuthScreenState extends State<AuthScreen>
         ),
       ),
     );
+  }
+}
+
+class _NestSheet extends StatelessWidget {
+  const _NestSheet({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return PhysicalShape(
+      color: AppTheme.cardBackground,
+      elevation: 6,
+      shadowColor: Colors.black.withOpacity(0.12),
+      clipper: const _NestClipper(curveDepth: 44),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: AppTheme.cardBackground,
+          border: Border.all(
+            color: AppTheme.borderColor.withOpacity(0.7),
+            width: 1,
+          ),
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _NestClipper extends CustomClipper<Path> {
+  const _NestClipper({required this.curveDepth});
+
+  final double curveDepth;
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.moveTo(0, 0);
+    path.quadraticBezierTo(size.width / 2, curveDepth * 2, size.width, 0);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(_NestClipper oldClipper) {
+    return oldClipper.curveDepth != curveDepth;
   }
 }

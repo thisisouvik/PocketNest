@@ -105,3 +105,6 @@ flutter:
     - family: Playfair Display
       fonts:
         - asset: assets/fonts/PlayfairDisplay-Variable.ttf
+    - family: Alkalami
+      fonts:
+        - asset: assets/fonts/Alkalami-Regular.ttf

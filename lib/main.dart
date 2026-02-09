@@ -11,13 +11,10 @@ import 'package:pocketnest/features/splash/screens/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Disable runtime font fetching — use only bundled/local fonts
   GoogleFonts.config.allowRuntimeFetching = false;
 
-  // Load environment variables
   await dotenv.load(fileName: '.env');
 
-  // Initialize Supabase
   await SupabaseService.initialize();
 
   runApp(
@@ -60,21 +57,27 @@ class PocketNestApp extends StatelessWidget {
   Widget _buildScreen(BuildContext context, AppFlowState state) {
     if (state is SplashState) {
       return const SplashScreen();
-    } else if (state is UnauthenticatedState) {
+
+    } 
+    else if (state is UnauthenticatedState) {
       return const AuthScreen();
-    } else if (state is ProfileIncompleteState) {
+
+    } 
+    else if (state is ProfileIncompleteState) {
       // TODO: Implement profile completion screen
       return Scaffold(
         appBar: AppBar(title: const Text('Complete Your Profile')),
         body: const Center(child: Text('Profile Completion Screen')),
       );
-    } else if (state is AuthenticatedState) {
+    } 
+    else if (state is AuthenticatedState) {
       // TODO: Implement home/main screen
       return Scaffold(
         appBar: AppBar(title: const Text('Home')),
         body: const Center(child: Text('Main App Screen')),
       );
-    } else if (state is AppFlowErrorState) {
+    } 
+    else if (state is AppFlowErrorState) {
       return Scaffold(
         appBar: AppBar(title: const Text('Error')),
         body: Center(

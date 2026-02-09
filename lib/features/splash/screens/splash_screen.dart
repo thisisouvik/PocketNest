@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
+import 'package:pocketnest/core/utils/app_assets.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -49,33 +50,11 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Woman image - circular crop or soft masked shape
-              Container(
-                width: 180,
-                height: 180,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: SvgPicture.asset(
-                    'lib/assets/images/splash/splash_women.svg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+              SvgPicture.asset(AppAssets.splashWomen, height: 220),
+
               const SizedBox(height: 48),
-              // PocketNest text logo
-              SvgPicture.asset(
-                'lib/assets/images/splash/splashTextStyle.svg',
-                height: 60,
-              ),
+
+              SvgPicture.asset(AppAssets.splashTextStyle, height: 36),
             ],
           ),
         ),
