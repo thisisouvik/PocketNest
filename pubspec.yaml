@@ -83,11 +83,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - lib/assets/
-    - lib/assets/images/
-    - lib/assets/images/branding/
-    - lib/assets/icons/
-    - lib/assets/images/splash/
+    - assets/
+    - assets/images/
+    - assets/images/branding/
+    - assets/icons/
+    - assets/images/splash/
     - .env
 
   # To add custom fonts to your application, add a fonts section here,
@@ -98,10 +98,10 @@ flutter:
   fonts:
     - family: AkayaKanadaka
       fonts:
-        - asset: lib/assets/fonts/AkayaKanadaka-Regular.ttf
+        - asset: assets/fonts/AkayaKanadaka-Regular.ttf
     - family: Inter
       fonts:
-        - asset: lib/assets/fonts/Inter-Variable.ttf
+        - asset: assets/fonts/Inter-Variable.ttf
     - family: Playfair Display
       fonts:
-        - asset: lib/assets/fonts/PlayfairDisplay-Variable.ttf
+        - asset: assets/fonts/PlayfairDisplay-Variable.ttf
