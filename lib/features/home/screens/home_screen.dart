@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
+import 'package:pocketnest/core/utils/groq_ai_utils.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.userId});
@@ -84,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTab(BuildContext context, int index) {
     switch (index) {
       case 0:
-        return const _HomeTab(key: ValueKey('home_tab'));
+        return _HomeTab(key: ValueKey('home_tab'), userId: widget.userId);
       case 1:
         return const _PlaceholderTab(
           key: ValueKey('save_tab'),
@@ -109,8 +111,123 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _HomeTab extends StatelessWidget {
-  const _HomeTab({super.key});
+class _HomeTab extends StatefulWidget {
+  const _HomeTab({super.key, required this.userId});
+
+  final String userId;
+
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  String _userName = 'Friend';
+  String _dailyTip = 'You\'re doing amazing! 💚';
+  String _cardTitle = 'Today\'s focus';
+  String _cardDescription = 'Let us make one gentle plan.';
+  bool _isLoading = true;
+  bool _skippedOnboarding = false;
+  Map<String, dynamic>? _onboardingData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllData();
+  }
+
+  Future<void> _loadAllData() async {
+    await Future.wait([
+      _loadUserData(),
+      _loadOnboardingData(),
+    ]);
+    
+    // After loading data, generate AI recommendations
+    await _generateAIContent();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final supabase = Supabase.instance.client;
+      final response = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', widget.userId)
+          .maybeSingle();
+
+      if (response != null) {
+        final name = response['full_name']?.toString().trim() ?? '';
+        setState(() {
+          _userName = name.isNotEmpty ? name : (response['email'] ?? 'Friend');
+        });
+      }
+    } catch (e) {
+      // Keep default 'Friend'
+    }
+  }
+
+  Future<void> _loadOnboardingData() async {
+    try {
+      final supabase = Supabase.instance.client;
+      
+      // Check if user has onboarding responses
+      final response = await supabase
+          .from('onboarding_responses')
+          .select('responses')
+          .eq('user_id', widget.userId)
+          .maybeSingle();
+
+      if (response != null && response['responses'] != null) {
+        // User completed onboarding
+        setState(() {
+          _onboardingData = Map<String, dynamic>.from(response['responses']);
+          _skippedOnboarding = false;
+        });
+      } else {
+        // User either skipped or never saw onboarding
+        setState(() {
+          _skippedOnboarding = true;
+          _onboardingData = null;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _skippedOnboarding = true;
+      });
+    }
+  }
+
+  Future<void> _generateAIContent() async {
+    try {
+      // Generate tip
+      final tip = await GroqAIUtils.generateDailyTip(
+        userName: _userName,
+        onboardingData: _onboardingData,
+        skippedOnboarding: _skippedOnboarding,
+      );
+
+      // Generate card title and description
+      final title = await GroqAIUtils.generateCardTitle(
+        onboardingData: _onboardingData,
+        skippedOnboarding: _skippedOnboarding,
+      );
+
+      final description = await GroqAIUtils.generateCardDescription(
+        onboardingData: _onboardingData,
+        skippedOnboarding: _skippedOnboarding,
+      );
+
+      setState(() {
+        _dailyTip = tip;
+        _cardTitle = title;
+        _cardDescription = description;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,9 +236,9 @@ class _HomeTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Good morning, Asha',
-            style: TextStyle(
+          Text(
+            'Good Morning, $_userName!',
+            style: const TextStyle(
               fontFamily: 'Alkalami',
               fontSize: 26,
               fontWeight: FontWeight.w500,
@@ -129,9 +246,9 @@ class _HomeTab extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Let us keep money calm and kind today. One small step is enough.',
-            style: TextStyle(
+          Text(
+            _dailyTip,
+            style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -142,20 +259,20 @@ class _HomeTab extends StatelessWidget {
           _SectionCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
-                  'Today’s focus',
-                  style: TextStyle(
+                  _cardTitle,
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.textSecondary,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Groceries have felt a bit stretched. Let us make one gentle plan.',
-                  style: TextStyle(
+                  _cardDescription,
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -172,7 +289,7 @@ class _HomeTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Small win for today',
+                  'Small win for Today',
                   style: TextStyle(
                     fontFamily: 'Alkalami',
                     fontSize: 20,
