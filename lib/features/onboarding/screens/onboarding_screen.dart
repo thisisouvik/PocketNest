@@ -8,7 +8,7 @@ class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key, required this.userId, this.onCompleted});
 
   final String userId;
-  final VoidCallback? onCompleted;
+  final Future<void> Function()? onCompleted;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await _saveResponses();
 
     if (widget.onCompleted != null) {
-      widget.onCompleted!();
+      await widget.onCompleted!();
       return;
     }
 
@@ -56,7 +56,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _skip() async {
-    await _goToNext();
+
+    if (widget.onCompleted != null) {
+      await widget.onCompleted!();
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   Map<String, dynamic> _buildResponses() {
