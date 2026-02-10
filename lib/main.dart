@@ -5,6 +5,7 @@ import 'package:pocketnest/config/supabase_config.dart';
 import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/features/auth/screens/auth_screen.dart';
+import 'package:pocketnest/features/home/screens/home_screen.dart';
 import 'package:pocketnest/features/onboarding/screens/onboarding_screen.dart';
 import 'package:pocketnest/features/splash/screens/splash_screen.dart';
 
@@ -71,11 +72,7 @@ class PocketNestApp extends StatelessWidget {
         },
       );
     } else if (state is AuthenticatedState) {
-      // TODO: Implement home/main screen
-      return Scaffold(
-        appBar: AppBar(title: const Text('Home')),
-        body: const Center(child: Text('Main App Screen')),
-      );
+      return HomeScreen(userId: state.userId);
     } else if (state is AppFlowErrorState) {
       return Scaffold(
         appBar: AppBar(title: const Text('Error')),
