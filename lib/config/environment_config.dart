@@ -9,6 +9,10 @@ class EnvironmentConfig {
     return dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   }
 
+  static String get googleWebClientId {
+    return dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
+  }
+
   static bool isProduction() {
     return dotenv.env['ENVIRONMENT'] == 'production';
   }

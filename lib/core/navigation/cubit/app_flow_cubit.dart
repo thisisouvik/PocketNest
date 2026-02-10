@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pocketnest/config/environment_config.dart';
 
 part 'app_flow_state.dart';
 
@@ -14,9 +15,12 @@ class AppFlowCubit extends Cubit<AppFlowState> {
   final GoogleSignIn googleSignIn;
   bool _hasSeenOnboarding = false;
   String? _currentUserId;
+  bool _profileExists = false;
 
   AppFlowCubit({required this.supabaseClient, GoogleSignIn? googleSignIn})
-    : googleSignIn = googleSignIn ?? GoogleSignIn(),
+    : googleSignIn =
+          googleSignIn ??
+          GoogleSignIn(serverClientId: EnvironmentConfig.googleWebClientId),
       super(const SplashState());
 
   Future<void> initializeApp() async {
@@ -50,8 +54,11 @@ class AppFlowCubit extends Cubit<AppFlowState> {
 
       if (response == null) {
         // Profile doesn't exist
-        emit(ProfileIncompleteState(userId: userId));
+        _currentUserId = userId;
+        _profileExists = false;
+        emit(OnboardingState(userId: userId));
       } else {
+        _profileExists = true;
         // Check if profile is complete (has required fields)
         final isComplete = _isProfileComplete(response);
         if (isComplete) {
@@ -89,7 +96,11 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     }
 
     _hasSeenOnboarding = true;
-    emit(AuthenticatedState(userId: _currentUserId!));
+    if (_profileExists) {
+      emit(AuthenticatedState(userId: _currentUserId!));
+    } else {
+      emit(ProfileIncompleteState(userId: _currentUserId!));
+    }
   }
 
   Future<Map<String, dynamic>?> loadOnboardingResponses() async {
@@ -229,6 +240,7 @@ class AppFlowCubit extends Cubit<AppFlowState> {
       await googleSignIn.signOut();
       _hasSeenOnboarding = false;
       _currentUserId = null;
+      _profileExists = false;
       emit(const UnauthenticatedState());
     } catch (e) {
       emit(AppFlowErrorState(message: e.toString()));
@@ -246,6 +258,7 @@ class AppFlowCubit extends Cubit<AppFlowState> {
         ...profileData,
       });
 
+      _profileExists = true;
       _emitPostProfileState(userId);
     } catch (e) {
       emit(AppFlowErrorState(message: e.toString()));
