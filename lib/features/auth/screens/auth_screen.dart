@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/app_assets.dart';
@@ -117,7 +116,8 @@ class _AuthScreenState extends State<AuthScreen>
                                 Text(
                                   'Welcome to the PocketNest',
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.playfairDisplay(
+                                  style: TextStyle(
+                                    fontFamily: 'Playfair Display',
                                     fontSize: 24,
                                     fontWeight: FontWeight.w600,
                                     color: AppTheme.textPrimary,
@@ -127,7 +127,8 @@ class _AuthScreenState extends State<AuthScreen>
                                 Text(
                                   'Open Your Nest',
                                   textAlign: TextAlign.center,
-                                  style: GoogleFonts.inter(
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                     color: AppTheme.textSecondary,
@@ -187,7 +188,8 @@ class _AuthScreenState extends State<AuthScreen>
                                         TextSpan(
                                           text:
                                               'By continuing, you agree to our ',
-                                          style: GoogleFonts.inter(
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
                                             fontSize: 12,
                                             fontWeight: FontWeight.w400,
                                             color: AppTheme.textSecondary,
@@ -195,7 +197,8 @@ class _AuthScreenState extends State<AuthScreen>
                                         ),
                                         TextSpan(
                                           text: 'Terms & Conditions',
-                                          style: GoogleFonts.inter(
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                             color: AppTheme.primaryColor,
@@ -205,7 +208,8 @@ class _AuthScreenState extends State<AuthScreen>
                                         ),
                                         TextSpan(
                                           text: ' and ',
-                                          style: GoogleFonts.inter(
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
                                             fontSize: 12,
                                             fontWeight: FontWeight.w400,
                                             color: AppTheme.textSecondary,
@@ -213,7 +217,8 @@ class _AuthScreenState extends State<AuthScreen>
                                         ),
                                         TextSpan(
                                           text: 'Privacy Policy',
-                                          style: GoogleFonts.inter(
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
                                             fontSize: 12,
                                             fontWeight: FontWeight.w600,
                                             color: AppTheme.primaryColor,
@@ -281,7 +286,8 @@ class _AuthScreenState extends State<AuthScreen>
                 ],
                 Text(
                   label,
-                  style: GoogleFonts.inter(
+                  style: TextStyle(
+                    fontFamily: 'Inter',
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: textColor,

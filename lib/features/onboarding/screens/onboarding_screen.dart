@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/app_assets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -137,7 +136,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     },
                     child: Text(
                       'Skip for now',
-                      style: GoogleFonts.inter(
+                      style: TextStyle(
+                        fontFamily: 'Inter',
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: AppTheme.textSecondary,
@@ -169,7 +169,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           _currentIndex == _questions.length - 1
                               ? 'Finish'
                               : 'Next',
-                          style: GoogleFonts.inter(
+                          style: TextStyle(
+                            fontFamily: 'Inter',
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -263,7 +264,8 @@ class _QuestionPage extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 question.options[index],
-                                style: GoogleFonts.inter(
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                   color: AppTheme.textPrimary,
@@ -396,7 +398,8 @@ class _OnboardingDoneScreen extends StatelessWidget {
       body: Center(
         child: Text(
           'You are ready to begin.',
-          style: GoogleFonts.playfairDisplay(
+          style: TextStyle(
+            fontFamily: 'Playfair Display',
             fontSize: 26,
             fontWeight: FontWeight.w600,
             color: AppTheme.textPrimary,
