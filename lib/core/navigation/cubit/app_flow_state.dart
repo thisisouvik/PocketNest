@@ -14,18 +14,24 @@ class UnauthenticatedState extends AppFlowState {
 
 class ProfileIncompleteState extends AppFlowState {
   final String userId;
-  
+
   const ProfileIncompleteState({required this.userId});
+}
+
+class OnboardingState extends AppFlowState {
+  final String userId;
+
+  const OnboardingState({required this.userId});
 }
 
 class AuthenticatedState extends AppFlowState {
   final String userId;
-  
+
   const AuthenticatedState({required this.userId});
 }
 
 class AppFlowErrorState extends AppFlowState {
   final String message;
-  
+
   const AppFlowErrorState({required this.message});
 }

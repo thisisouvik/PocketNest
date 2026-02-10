@@ -12,6 +12,8 @@ part 'app_flow_state.dart';
 class AppFlowCubit extends Cubit<AppFlowState> {
   final SupabaseClient supabaseClient;
   final GoogleSignIn googleSignIn;
+  bool _hasSeenOnboarding = false;
+  String? _currentUserId;
 
   AppFlowCubit({required this.supabaseClient, GoogleSignIn? googleSignIn})
     : googleSignIn = googleSignIn ?? GoogleSignIn(),
@@ -53,7 +55,7 @@ class AppFlowCubit extends Cubit<AppFlowState> {
         // Check if profile is complete (has required fields)
         final isComplete = _isProfileComplete(response);
         if (isComplete) {
-          emit(AuthenticatedState(userId: userId));
+          _emitPostProfileState(userId);
         } else {
           emit(ProfileIncompleteState(userId: userId));
         }
@@ -70,6 +72,24 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     return requiredFields.every(
       (field) => profile.containsKey(field) && profile[field] != null,
     );
+  }
+
+  void _emitPostProfileState(String userId) {
+    _currentUserId = userId;
+    if (_hasSeenOnboarding) {
+      emit(AuthenticatedState(userId: userId));
+    } else {
+      emit(OnboardingState(userId: userId));
+    }
+  }
+
+  void completeOnboarding() {
+    if (_currentUserId == null) {
+      return;
+    }
+
+    _hasSeenOnboarding = true;
+    emit(AuthenticatedState(userId: _currentUserId!));
   }
 
   Future<void> loginWithGoogle() async {
@@ -179,6 +199,8 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     try {
       await supabaseClient.auth.signOut();
       await googleSignIn.signOut();
+      _hasSeenOnboarding = false;
+      _currentUserId = null;
       emit(const UnauthenticatedState());
     } catch (e) {
       emit(AppFlowErrorState(message: e.toString()));
@@ -196,7 +218,7 @@ class AppFlowCubit extends Cubit<AppFlowState> {
         ...profileData,
       });
 
-      emit(AuthenticatedState(userId: userId));
+      _emitPostProfileState(userId);
     } catch (e) {
       emit(AppFlowErrorState(message: e.toString()));
     }
