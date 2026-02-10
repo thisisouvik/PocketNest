@@ -96,11 +96,7 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     }
 
     _hasSeenOnboarding = true;
-    if (_profileExists) {
-      emit(AuthenticatedState(userId: _currentUserId!));
-    } else {
-      emit(ProfileIncompleteState(userId: _currentUserId!));
-    }
+    emit(AuthenticatedState(userId: _currentUserId!));
   }
 
   Future<Map<String, dynamic>?> loadOnboardingResponses() async {
