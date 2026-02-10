@@ -13,6 +13,10 @@ class EnvironmentConfig {
     return dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
   }
 
+  static String get groqApiKey {
+    return dotenv.env['GROQ_API_KEY'] ?? '';
+  }
+
   static bool isProduction() {
     return dotenv.env['ENVIRONMENT'] == 'production';
   }
