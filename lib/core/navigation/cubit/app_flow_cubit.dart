@@ -13,9 +13,7 @@ part 'app_flow_state.dart';
 class AppFlowCubit extends Cubit<AppFlowState> {
   final SupabaseClient supabaseClient;
   final GoogleSignIn googleSignIn;
-  bool _hasSeenOnboarding = false;
   String? _currentUserId;
-  bool _profileExists = false;
 
   AppFlowCubit({required this.supabaseClient, GoogleSignIn? googleSignIn})
     : googleSignIn =
@@ -53,23 +51,37 @@ class AppFlowCubit extends Cubit<AppFlowState> {
           .maybeSingle();
 
       if (response == null) {
-        // Profile doesn't exist
+        // Profile doesn't exist, create it with onboarding_completed = false
         _currentUserId = userId;
-        _profileExists = false;
+        
+        // Get user email from auth
+        final authUser = supabaseClient.auth.currentUser;
+        
+        // Create profile
+        await supabaseClient.from('profiles').upsert({
+          'id': userId,
+          'email': authUser?.email,
+          'onboarding_completed': false,
+        });
+        
+        // Show onboarding
         emit(OnboardingState(userId: userId));
       } else {
-        _profileExists = true;
-        // Check if profile is complete (has required fields)
-        final isComplete = _isProfileComplete(response);
-        if (isComplete) {
-          _emitPostProfileState(userId);
+        _currentUserId = userId;
+        // Check if user has already completed onboarding
+        final onboardingCompleted = response['onboarding_completed'] ?? false;
+        if (onboardingCompleted) {
+          // User already did onboarding, go straight to home
+          emit(AuthenticatedState(userId: userId));
         } else {
-          emit(ProfileIncompleteState(userId: userId));
+          // User needs to complete onboarding
+          emit(OnboardingState(userId: userId));
         }
       }
     } catch (e) {
-      // If we can't check profile, consider it incomplete
-      emit(ProfileIncompleteState(userId: userId));
+      // If we can't check profile, show onboarding
+      _currentUserId = userId;
+      emit(OnboardingState(userId: userId));
     }
   }
 
@@ -81,22 +93,22 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     );
   }
 
-  void _emitPostProfileState(String userId) {
-    _currentUserId = userId;
-    if (_hasSeenOnboarding) {
-      emit(AuthenticatedState(userId: userId));
-    } else {
-      emit(OnboardingState(userId: userId));
-    }
-  }
-
-  void completeOnboarding() {
+  Future<void> completeOnboarding() async {
     if (_currentUserId == null) {
       return;
     }
 
-    _hasSeenOnboarding = true;
-    emit(AuthenticatedState(userId: _currentUserId!));
+    try {
+      // Mark onboarding as completed in the database
+      await supabaseClient.from('profiles').upsert({
+        'id': _currentUserId,
+        'onboarding_completed': true,
+      });
+
+      emit(AuthenticatedState(userId: _currentUserId!));
+    } catch (e) {
+      emit(AppFlowErrorState(message: 'Failed to complete onboarding: $e'));
+    }
   }
 
   Future<Map<String, dynamic>?> loadOnboardingResponses() async {
@@ -234,9 +246,7 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     try {
       await supabaseClient.auth.signOut();
       await googleSignIn.signOut();
-      _hasSeenOnboarding = false;
       _currentUserId = null;
-      _profileExists = false;
       emit(const UnauthenticatedState());
     } catch (e) {
       emit(AppFlowErrorState(message: e.toString()));
@@ -254,8 +264,8 @@ class AppFlowCubit extends Cubit<AppFlowState> {
         ...profileData,
       });
 
-      _profileExists = true;
-      _emitPostProfileState(userId);
+      _currentUserId = userId;
+      emit(AuthenticatedState(userId: userId));
     } catch (e) {
       emit(AppFlowErrorState(message: e.toString()));
     }
