@@ -68,6 +68,7 @@ class PocketNestApp extends StatelessWidget {
       );
     } else if (state is OnboardingState) {
       return OnboardingScreen(
+        userId: state.userId,
         onCompleted: () {
           context.read<AppFlowCubit>().completeOnboarding();
         },

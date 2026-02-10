@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Color Palette
@@ -21,14 +20,15 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
+    fontFamily: 'Inter',
     scaffoldBackgroundColor: backgroundColor,
     appBarTheme: AppBarTheme(
       backgroundColor: backgroundColor,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: GoogleFonts.playfairDisplay(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
+      titleTextStyle: _playfair(
+        size: 24,
+        weight: FontWeight.w700,
         color: textPrimary,
       ),
       iconTheme: const IconThemeData(color: textPrimary),
@@ -59,7 +59,11 @@ class AppTheme {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+        textStyle: _inter(
+          size: 16,
+          weight: FontWeight.w600,
+          color: Colors.white,
+        ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -68,75 +72,71 @@ class AppTheme {
         side: const BorderSide(color: primaryColor, width: 1.5),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+        textStyle: _inter(
+          size: 16,
+          weight: FontWeight.w600,
+          color: primaryColor,
+        ),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: primaryColor,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        textStyle: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500),
+        textStyle: _inter(
+          size: 14,
+          weight: FontWeight.w500,
+          color: primaryColor,
+        ),
       ),
     ),
     textTheme: TextTheme(
-      displayLarge: GoogleFonts.playfairDisplay(
-        fontSize: 48,
-        fontWeight: FontWeight.w700,
+      displayLarge: _playfair(
+        size: 48,
+        weight: FontWeight.w700,
         color: textPrimary,
       ),
-      displayMedium: GoogleFonts.playfairDisplay(
-        fontSize: 40,
-        fontWeight: FontWeight.w700,
+      displayMedium: _playfair(
+        size: 40,
+        weight: FontWeight.w700,
         color: textPrimary,
       ),
-      displaySmall: GoogleFonts.playfairDisplay(
-        fontSize: 32,
-        fontWeight: FontWeight.w700,
+      displaySmall: _playfair(
+        size: 32,
+        weight: FontWeight.w700,
         color: textPrimary,
       ),
-      headlineMedium: GoogleFonts.playfairDisplay(
-        fontSize: 28,
-        fontWeight: FontWeight.w600,
+      headlineMedium: _playfair(
+        size: 28,
+        weight: FontWeight.w600,
         color: textPrimary,
       ),
-      headlineSmall: GoogleFonts.playfairDisplay(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
+      headlineSmall: _playfair(
+        size: 24,
+        weight: FontWeight.w600,
         color: textPrimary,
       ),
-      titleLarge: GoogleFonts.inter(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
+      titleLarge: _inter(size: 20, weight: FontWeight.w600, color: textPrimary),
+      titleMedium: _inter(
+        size: 16,
+        weight: FontWeight.w600,
         color: textPrimary,
       ),
-      titleMedium: GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
-      ),
-      titleSmall: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: textPrimary,
-      ),
-      bodyLarge: GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w400,
-        color: textPrimary,
-      ),
-      bodyMedium: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
+      titleSmall: _inter(size: 14, weight: FontWeight.w600, color: textPrimary),
+      bodyLarge: _inter(size: 16, weight: FontWeight.w400, color: textPrimary),
+      bodyMedium: _inter(
+        size: 14,
+        weight: FontWeight.w400,
         color: textSecondary,
       ),
-      bodySmall: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
+      bodySmall: _inter(
+        size: 12,
+        weight: FontWeight.w400,
         color: textSecondary,
       ),
-      labelLarge: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
+      labelLarge: _inter(
+        size: 14,
+        weight: FontWeight.w600,
         color: Colors.white,
       ),
     ),
@@ -156,14 +156,14 @@ class AppTheme {
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: primaryColor, width: 2),
       ),
-      labelStyle: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
+      labelStyle: _inter(
+        size: 14,
+        weight: FontWeight.w400,
         color: textSecondary,
       ),
-      hintStyle: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
+      hintStyle: _inter(
+        size: 14,
+        weight: FontWeight.w400,
         color: textSecondary,
       ),
     ),
@@ -173,4 +173,30 @@ class AppTheme {
       space: 16,
     ),
   );
+
+  static TextStyle _inter({
+    required double size,
+    required FontWeight weight,
+    required Color color,
+  }) {
+    return TextStyle(
+      fontFamily: 'Inter',
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+    );
+  }
+
+  static TextStyle _playfair({
+    required double size,
+    required FontWeight weight,
+    required Color color,
+  }) {
+    return TextStyle(
+      fontFamily: 'Playfair Display',
+      fontSize: size,
+      fontWeight: weight,
+      color: color,
+    );
+  }
 }

@@ -92,6 +92,24 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     emit(AuthenticatedState(userId: _currentUserId!));
   }
 
+  Future<Map<String, dynamic>?> loadOnboardingResponses() async {
+    if (_currentUserId == null) {
+      return null;
+    }
+
+    final response = await supabaseClient
+        .from('onboarding_responses')
+        .select('responses')
+        .eq('user_id', _currentUserId!)
+        .maybeSingle();
+
+    if (response == null || response['responses'] == null) {
+      return null;
+    }
+
+    return Map<String, dynamic>.from(response['responses'] as Map);
+  }
+
   Future<void> loginWithGoogle() async {
     try {
       emit(const SplashState()); // Show loading state
@@ -103,6 +121,16 @@ class AppFlowCubit extends Cubit<AppFlowState> {
       }
 
       final googleAuth = await googleUser.authentication;
+
+      if (googleAuth.idToken == null) {
+        emit(
+          const AppFlowErrorState(
+            message:
+                'Google sign-in failed: missing ID token. Check Web Client ID setup.',
+          ),
+        );
+        return;
+      }
 
       // Sign in with Supabase using OAuth
       final response = await supabaseClient.auth.signInWithIdToken(
