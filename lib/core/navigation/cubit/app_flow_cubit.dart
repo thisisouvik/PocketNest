@@ -53,17 +53,26 @@ class AppFlowCubit extends Cubit<AppFlowState> {
       if (response == null) {
         // Profile doesn't exist, create it with onboarding_completed = false
         _currentUserId = userId;
-        
-        // Get user email from auth
+
+        // Get user email/name from auth
         final authUser = supabaseClient.auth.currentUser;
-        
-        // Create profile
+        final fullName =
+            (authUser?.userMetadata?['full_name'] ??
+                    authUser?.userMetadata?['name'] ??
+                    authUser?.userMetadata?['fullName'] ??
+                    '')
+                .toString()
+                .trim();
+
         await supabaseClient.from('profiles').upsert({
           'id': userId,
           'email': authUser?.email,
+          'full_name': fullName.isNotEmpty
+              ? fullName
+              : (authUser?.email?.split('@').first ?? 'Friend'),
           'onboarding_completed': false,
         });
-        
+
         // Show onboarding
         emit(OnboardingState(userId: userId));
       } else {

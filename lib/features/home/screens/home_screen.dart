@@ -66,10 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.savings_outlined),
             label: 'Save',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up),
-            label: 'Grow',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.trending_up), label: 'Grow'),
           BottomNavigationBarItem(
             icon: Icon(Icons.groups_outlined),
             label: 'Community',
@@ -136,11 +133,8 @@ class _HomeTabState extends State<_HomeTab> {
   }
 
   Future<void> _loadAllData() async {
-    await Future.wait([
-      _loadUserData(),
-      _loadOnboardingData(),
-    ]);
-    
+    await Future.wait([_loadUserData(), _loadOnboardingData()]);
+
     // After loading data, generate AI recommendations
     await _generateAIContent();
   }
@@ -154,12 +148,36 @@ class _HomeTabState extends State<_HomeTab> {
           .eq('id', widget.userId)
           .maybeSingle();
 
-      if (response != null) {
-        final name = response['full_name']?.toString().trim() ?? '';
-        setState(() {
-          _userName = name.isNotEmpty ? name : (response['email'] ?? 'Friend');
-        });
+      final authUser = supabase.auth.currentUser;
+      final authName =
+          (authUser?.userMetadata?['full_name'] ??
+                  authUser?.userMetadata?['name'] ??
+                  authUser?.userMetadata?['fullName'] ??
+                  '')
+              .toString()
+              .trim();
+
+      final profileName = response?['full_name']?.toString().trim() ?? '';
+      final profileEmail = response?['email']?.toString().trim() ?? '';
+
+      final resolvedName = profileName.isNotEmpty
+          ? profileName
+          : (authName.isNotEmpty
+                ? authName
+                : (profileEmail.isNotEmpty
+                      ? profileEmail
+                      : (authUser?.email?.split('@').first ?? 'Friend')));
+
+      if (response != null && profileName.isEmpty && authName.isNotEmpty) {
+        await supabase
+            .from('profiles')
+            .update({'full_name': authName})
+            .eq('id', widget.userId);
       }
+
+      setState(() {
+        _userName = resolvedName;
+      });
     } catch (e) {
       // Keep default 'Friend'
     }
@@ -168,7 +186,7 @@ class _HomeTabState extends State<_HomeTab> {
   Future<void> _loadOnboardingData() async {
     try {
       final supabase = Supabase.instance.client;
-      
+
       // Check if user has onboarding responses
       final response = await supabase
           .from('onboarding_responses')
@@ -310,8 +328,11 @@ class _HomeTabState extends State<_HomeTab> {
                 const SizedBox(height: 12),
                 Row(
                   children: const [
-                    Icon(Icons.savings_outlined,
-                        size: 18, color: AppTheme.primaryColor),
+                    Icon(
+                      Icons.savings_outlined,
+                      size: 18,
+                      color: AppTheme.primaryColor,
+                    ),
                     SizedBox(width: 8),
                     Text(
                       'Estimated savings: Rs. 250 this week',
