@@ -13,7 +13,6 @@ class GrowTab extends StatefulWidget {
 
 class _GrowTabState extends State<GrowTab> {
   bool _isLoading = true;
-  Map<String, dynamic>? _userProfile;
   Map<String, dynamic>? _onboardingData;
   List<Map<String, dynamic>> _roadmapSteps = [];
 
@@ -26,13 +25,6 @@ class _GrowTabState extends State<GrowTab> {
   Future<void> _loadUserData() async {
     try {
       final supabase = Supabase.instance.client;
-      
-      // Load user profile
-      final profileResponse = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', widget.userId)
-          .maybeSingle();
 
       // Load onboarding data
       final onboardingResponse = await supabase
@@ -42,7 +34,6 @@ class _GrowTabState extends State<GrowTab> {
           .maybeSingle();
 
       setState(() {
-        _userProfile = profileResponse;
         _onboardingData = onboardingResponse?['responses'];
         _roadmapSteps = _generateRoadmapSteps();
         _isLoading = false;
@@ -91,10 +82,11 @@ class _GrowTabState extends State<GrowTab> {
 
   String _getRiskLevel() {
     if (_onboardingData == null) return 'Balanced';
-    
+
     final riskPreference = _onboardingData!['growth_preference']?['value'];
     if (riskPreference == 'Safe and steady') return 'Conservative';
-    if (riskPreference == 'Taking chances for bigger gains') return 'Adventurous';
+    if (riskPreference == 'Taking chances for bigger gains')
+      return 'Adventurous';
     return 'Balanced';
   }
 
@@ -156,15 +148,17 @@ class _GrowTabState extends State<GrowTab> {
                 ),
               ),
               const SizedBox(height: 10),
-              ..._roadmapSteps.map((step) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _RoadmapStepCard(
-                      title: step['title'],
-                      description: step['description'],
-                      icon: step['icon'],
-                      completed: step['completed'],
-                    ),
-                  )),
+              ..._roadmapSteps.map(
+                (step) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _RoadmapStepCard(
+                    title: step['title'],
+                    description: step['description'],
+                    icon: step['icon'],
+                    completed: step['completed'],
+                  ),
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Section 3: Wealth Learning Bites
@@ -242,7 +236,7 @@ class _GrowthSnapshotCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          
+
           // Emergency Fund Status
           Row(
             children: [
@@ -350,9 +344,9 @@ class _GrowthSnapshotCard extends StatelessWidget {
           const SizedBox(height: 10),
 
           // Supportive Message
-          const Text(
+          Text(
             "You're building steadily. Small consistency matters.",
-            style: TextStyle(
+            style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 13,
               fontWeight: FontWeight.w400,
@@ -491,11 +485,7 @@ class _LearningBiteCard extends StatelessWidget {
                 color: const Color(0xFFF3E5F5),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: AppTheme.primaryColor,
-              ),
+              child: Icon(icon, size: 20, color: AppTheme.primaryColor),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -547,10 +537,7 @@ class _PremiumBlueprintPreview extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFFFF8F0),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFFFE0B2),
-          width: 1.5,
-        ),
+        border: Border.all(color: const Color(0xFFFFE0B2), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -572,11 +559,7 @@ class _PremiumBlueprintPreview extends StatelessWidget {
                 ),
                 child: const Row(
                   children: [
-                    Icon(
-                      Icons.diamond,
-                      size: 12,
-                      color: Colors.white,
-                    ),
+                    Icon(Icons.diamond, size: 12, color: Colors.white),
                     SizedBox(width: 4),
                     Text(
                       'Premium',
@@ -683,10 +666,7 @@ class _PremiumBlueprintPreview extends StatelessWidget {
 
 // Premium Feature Item
 class _PremiumFeatureItem extends StatelessWidget {
-  const _PremiumFeatureItem({
-    required this.icon,
-    required this.text,
-  });
+  const _PremiumFeatureItem({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
@@ -695,11 +675,7 @@ class _PremiumFeatureItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: const Color(0xFFFF9800),
-        ),
+        Icon(icon, size: 16, color: const Color(0xFFFF9800)),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
