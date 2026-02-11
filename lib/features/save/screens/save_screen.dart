@@ -14,8 +14,7 @@ class SaveTab extends StatefulWidget {
 
 class _SaveTabState extends State<SaveTab> {
   String _selectedFilter = 'All';
-  String _weeklyStrategy =
-      'Batch cooking once this week could reduce waste and save around \$18.';
+  String _weeklyStrategy = 'Batch cooking saves around \$18 weekly.';
   Map<String, dynamic>? _userProfile;
   bool _isLoading = true;
 
@@ -98,7 +97,7 @@ class _SaveTabState extends State<SaveTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Smarter savings',
+                    'Smarter Savings',
                     style: TextStyle(
                       fontFamily: 'Alkalami',
                       fontSize: 28,
@@ -108,7 +107,7 @@ class _SaveTabState extends State<SaveTab> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Here are a few ways you could stretch your money this week.',
+                    'Smart savings for your week.',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 14,
@@ -123,9 +122,8 @@ class _SaveTabState extends State<SaveTab> {
 
               // Local Opportunity Card
               _SavingsCard(
-                title: 'Seasonal produce',
-                description:
-                    'Seasonal produce is 10% cheaper near you this week. Visit the farmer\'s market on weekends for best selection.',
+                title: 'Seasonal Produce',
+                description: 'Seasonal items are 10% cheaper this week.',
                 icon: Icons.location_on_outlined,
                 accentColor: const Color(0xFFE8F5E9),
                 hasButton: true,
@@ -134,9 +132,8 @@ class _SaveTabState extends State<SaveTab> {
 
               // Online Shopping Insight
               _SavingsCard(
-                title: 'Essentials discount',
-                description:
-                    'Your usual shopping platform is running a 15% off essentials sale this week. Stock up on household staples.',
+                title: 'Essentials Discount',
+                description: '15% off essentials sale on your platform.',
                 icon: Icons.shopping_bag_outlined,
                 accentColor: const Color(0xFFF3E5F5),
                 hasButton: true,
@@ -145,11 +142,11 @@ class _SaveTabState extends State<SaveTab> {
 
               // AI-Suggested Strategy
               _SavingsCard(
-                title: 'Weekly strategy',
+                title: 'Weekly Strategy',
                 description: _weeklyStrategy,
                 icon: Icons.lightbulb_outline,
                 accentColor: const Color(0xFFFFF8E1),
-                hasButton: false,
+                hasButton: true,
               ),
               const SizedBox(height: 20),
 
@@ -218,7 +215,7 @@ class _SaveTabState extends State<SaveTab> {
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
 
               // Category-Specific Savings (based on selected filter)
               _buildCategoryContent(),
@@ -371,7 +368,7 @@ class _SaveTabState extends State<SaveTab> {
       children: List.generate(
         cards.length,
         (index) => Padding(
-          padding: EdgeInsets.only(bottom: index < cards.length - 1 ? 10 : 0),
+          padding: EdgeInsets.only(bottom: index < cards.length - 1 ? 8 : 0),
           child: cards[index],
         ),
       ),
@@ -380,15 +377,23 @@ class _SaveTabState extends State<SaveTab> {
 
   Widget _buildSmallCard(String title, String description) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppTheme.cardBackground,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -399,20 +404,20 @@ class _SaveTabState extends State<SaveTab> {
             title,
             style: const TextStyle(
               fontFamily: 'Inter',
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
               color: AppTheme.primaryColor,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             description,
             style: const TextStyle(
               fontFamily: 'Inter',
-              fontSize: 12,
+              fontSize: 13,
               fontWeight: FontWeight.w400,
               color: AppTheme.textSecondary,
-              height: 1.4,
+              height: 1.5,
             ),
           ),
         ],
@@ -481,6 +486,8 @@ class _SavingsCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 13,
