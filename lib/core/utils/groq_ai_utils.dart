@@ -3,8 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:pocketnest/config/environment_config.dart';
 
 class GroqAIUtils {
-  static const String _baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
-  static const String _model = 'mixtral-8x7b-32768';
+  static const String _baseUrl =
+      'https://api.groq.com/openai/v1/chat/completions';
+  static const String _model = 'llama-3.1-8b-instant';
 
   // Generate daily tip based on user data
   static Future<String> generateDailyTip({
@@ -95,10 +96,7 @@ class GroqAIUtils {
         body: jsonEncode({
           'model': _model,
           'messages': [
-            {
-              'role': 'user',
-              'content': userPrompt,
-            },
+            {'role': 'user', 'content': userPrompt},
           ],
           'max_tokens': 50,
           'temperature': 0.7,
@@ -107,7 +105,8 @@ class GroqAIUtils {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['choices'][0]['message']['content'] ?? 'Let\'s talk about money';
+        return data['choices'][0]['message']['content'] ??
+            'Let\'s talk about money';
       } else {
         return 'Let\'s talk about money';
       }
@@ -146,10 +145,7 @@ class GroqAIUtils {
         body: jsonEncode({
           'model': _model,
           'messages': [
-            {
-              'role': 'user',
-              'content': userPrompt,
-            },
+            {'role': 'user', 'content': userPrompt},
           ],
           'max_tokens': 100,
           'temperature': 0.7,
@@ -236,5 +232,51 @@ class GroqAIUtils {
     }
 
     return 'building money confidence step by step';
+  }
+
+  // Generate weekly saving strategy for Save page
+  static Future<String> generateWeeklySavingStrategy({
+    required Map<String, dynamic> userProfile,
+  }) async {
+    try {
+      final systemPrompt =
+          'You are a thoughtful financial advisor for busy mums. '
+          'Suggest one clever, actionable weekly saving strategy that feels smart, not restrictive. '
+          'Focus on lifestyle-aligned savings, not coupon clipping. Be warm and supportive.';
+
+      final userPrompt =
+          'Suggest ONE specific, actionable money-saving strategy this user could do this week. '
+          'Make it practical and aligned with their lifestyle (busy mum with limited time). '
+          'Example: "Batch cooking once this week could reduce waste and save around \$18." '
+          'Be specific with estimated savings. Max 1 sentence. No intro/outro.';
+
+      final response = await http.post(
+        Uri.parse(_baseUrl),
+        headers: {
+          'Authorization': 'Bearer ${EnvironmentConfig.groqApiKey}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'model': _model,
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userPrompt},
+          ],
+          'max_tokens': 150,
+          'temperature': 0.7,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return (data['choices']?[0]?['message']?['content'] as String?)
+                ?.trim() ??
+            'Batch cooking once this week could reduce waste and save around \$18.';
+      }
+
+      return 'Batch cooking once this week could reduce waste and save around \$18.';
+    } catch (e) {
+      return 'Batch cooking once this week could reduce waste and save around \$18.';
+    }
   }
 }
