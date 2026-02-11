@@ -20,12 +20,11 @@ class GroqAIUtils {
       if (skippedOnboarding) {
         // Generic friendly tip for users who skipped onboarding
         systemPrompt =
-            'You are a warm, supportive financial advisor for busy mums. '
+            'You are a warm, supportive financial advisor. '
             'Create encouraging, simple, actionable money tips.';
         userPrompt =
-            'Create a warm daily money tip for $userName. She is learning about '
-            'money confidence. Be friendly, encouraging, and actionable. Max 2 sentences. '
-            'Add 1 relevant emoji.';
+            'Create a warm daily money tip for $userName. '
+            'Max 10 words. Add 1 emoji.';
       } else {
         // Personalized tip based on onboarding responses
         final concerns = _extractConcerns(onboardingData);
@@ -33,8 +32,8 @@ class GroqAIUtils {
             'You are a warm, supportive financial advisor for busy mums. '
             'Create encouraging, personalized money tips based on their specific situation.';
         userPrompt =
-            'Create a warm daily tip for $userName based on her situation: $concerns. '
-            'Be specific to her concerns. Max 2 sentences. Add 1 relevant emoji.';
+            'Create a warm daily tip for $userName about: $concerns. '
+            'Max 10 words. Add 1 emoji.';
       }
 
       final response = await http.post(
@@ -77,7 +76,7 @@ class GroqAIUtils {
       if (skippedOnboarding) {
         // Generic title for users who skipped
         userPrompt =
-            'Create a warm, encouraging title for a money guidance card for busy mums. '
+            'Create a warm, encouraging title for a money guidance card. '
             'Focus on gentle budgeting and money confidence. Max 5 words. No quotes.';
       } else {
         // Personalized title based on top concern
@@ -126,14 +125,14 @@ class GroqAIUtils {
       if (skippedOnboarding) {
         // Generic description for skip users - most common concern
         userPrompt =
-            'Create a gentle, friendly description for helping busy mums manage groceries '
-            'and household budgets. Focus on being supportive and practical. Max 2 sentences.';
+            'Create a gentle description for managing money. '
+            'Max 10 words. Be supportive.';
       } else {
         // Personalized description
         final topConcern = _getTopConcern(onboardingData);
         userPrompt =
-            'Create a warm, practical description for helping with this concern: $topConcern. '
-            'Max 2 sentences. Be encouraging and action-oriented.';
+            'Create a practical tip for: $topConcern. '
+            'Max 10 words. Be encouraging.';
       }
 
       final response = await http.post(
@@ -240,13 +239,13 @@ class GroqAIUtils {
   }) async {
     try {
       final systemPrompt =
-          'You are a thoughtful financial advisor for busy mums. '
+          'You are a thoughtful financial advisor. '
           'Suggest one clever, actionable weekly saving strategy that feels smart, not restrictive. '
           'Focus on lifestyle-aligned savings, not coupon clipping. Be warm and supportive.';
 
       final userPrompt =
           'Suggest ONE specific, actionable money-saving strategy this user could do this week. '
-          'Make it practical and aligned with their lifestyle (busy mum with limited time). '
+          'Make it practical and lifestyle-aligned. '
           'Example: "Batch cooking once this week could reduce waste and save around \$18." '
           'Be specific with estimated savings. Max 1 sentence. No intro/outro.';
 
