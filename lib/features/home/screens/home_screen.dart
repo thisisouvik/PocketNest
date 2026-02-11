@@ -119,7 +119,7 @@ class _HomeTabState extends State<_HomeTab> {
   String _userName = 'Friend';
   String _dailyTip = 'You\'re doing amazing! 💚';
   String _cardTitle = 'Today\'s focus';
-  String _cardDescription = 'Let us make one gentle plan.';
+  String _cardDescription = 'Let us plan something.';
   bool _skippedOnboarding = false;
   Map<String, dynamic>? _onboardingData;
   List<Map<String, String>> _helpfulIdeas = [];
@@ -295,42 +295,48 @@ class _HomeTabState extends State<_HomeTab> {
         }
         ideas.add({
           'title': 'Gentle Goal',
-          'body': 'One small step toward your $forWho goal today.',
+          'body': 'Reach your goal for $forWho.',
         });
       }
 
       if (ideas.isEmpty) {
         ideas.add({
           'title': 'Daily Check-in',
-          'body': 'Notice one money moment today.',
+          'body': 'Track your daily spending habit.',
         });
         ideas.add({
           'title': 'Comfort Zone',
-          'body': 'Learn at your pace. No rush.',
+          'body': 'Start small. You can do this.',
         });
         ideas.add({'title': 'Small Win', 'body': 'One good choice is enough.'});
       } else if (ideas.length == 1) {
         ideas.add({
           'title': 'Comfort Zone',
-          'body': 'Learn at your pace. No rush.',
+          'body': 'Start small. You can do this.',
         });
-        ideas.add({'title': 'Small Win', 'body': 'One good choice is enough.'});
+        ideas.add({
+          'title': 'Smart Choice',
+          'body': 'Every good choice counts.',
+        });
       } else if (ideas.length == 2) {
-        ideas.add({'title': 'Small Win', 'body': 'One good choice is enough.'});
+        ideas.add({
+          'title': 'Smart Choice',
+          'body': 'Every good choice counts.',
+        });
       }
     } else {
       // Generic ideas for skip users
       ideas.add({
         'title': 'Grocery Smart',
-        'body': 'Plan meals → saves money & time.',
+        'body': 'Plan ahead. Save money and time.',
       });
       ideas.add({
         'title': 'Progress Track',
-        'body': 'One small money choice today.',
+        'body': 'One smart choice every day.',
       });
       ideas.add({
         'title': 'Comfort Zone',
-        'body': 'Learn at your pace. No rush.',
+        'body': 'Start small. You can do this.',
       });
     }
 
@@ -362,6 +368,8 @@ class _HomeTabState extends State<_HomeTab> {
           const SizedBox(height: 6),
           Text(
             _dailyTip,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontFamily: 'Inter',
               fontSize: 14,
@@ -414,7 +422,7 @@ class _HomeTabState extends State<_HomeTab> {
                 const SizedBox(height: 6),
                 Text(
                   _cardDescription,
-                  maxLines: 3,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: 'Inter',
@@ -435,7 +443,7 @@ class _HomeTabState extends State<_HomeTab> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Small, consistent steps build confidence',
+                        'Build confidence with small steps.',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 13,
@@ -479,7 +487,7 @@ class _HomeTabState extends State<_HomeTab> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
-                  'A few gentle ideas',
+                  'Smart ideas for you',
                   style: TextStyle(
                     fontFamily: 'Alkalami',
                     fontSize: 18,
@@ -525,7 +533,7 @@ class _HomeTabState extends State<_HomeTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Your gentle progress',
+                  'Your progress',
                   style: TextStyle(
                     fontFamily: 'Alkalami',
                     fontSize: 18,
