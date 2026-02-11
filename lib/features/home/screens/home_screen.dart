@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
+import 'package:pocketnest/features/save/screens/save_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -85,10 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return _HomeTab(key: ValueKey('home_tab'), userId: widget.userId);
       case 1:
-        return const _PlaceholderTab(
-          key: ValueKey('save_tab'),
-          label: 'Save ideas are coming here.',
-        );
+        return SaveTab(key: ValueKey('save_tab'), userId: widget.userId);
       case 2:
         return const _PlaceholderTab(
           key: ValueKey('grow_tab'),
@@ -126,6 +124,20 @@ class _HomeTabState extends State<_HomeTab> {
   Map<String, dynamic>? _onboardingData;
   List<Map<String, String>> _helpfulIdeas = [];
   double _progressValue = 0.0;
+
+  // Method to get time-based greeting
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
+    }
+  }
 
   @override
   void initState() {
@@ -287,24 +299,24 @@ class _HomeTabState extends State<_HomeTab> {
         });
       }
 
-      // If less than 3 ideas, add generic fallbacks
       if (ideas.isEmpty) {
         ideas.add({
           'title': 'Daily Check-in',
           'body': 'Notice one money moment today.',
         });
-      }
-      if (ideas.length < 2) {
         ideas.add({
           'title': 'Comfort Zone',
           'body': 'Learn at your pace. No rush.',
         });
-      }
-      if (ideas.length < 3) {
+        ideas.add({'title': 'Small Win', 'body': 'One good choice is enough.'});
+      } else if (ideas.length == 1) {
         ideas.add({
-          'title': 'Small Win',
-          'body': 'One good choice is enough.',
+          'title': 'Comfort Zone',
+          'body': 'Learn at your pace. No rush.',
         });
+        ideas.add({'title': 'Small Win', 'body': 'One good choice is enough.'});
+      } else if (ideas.length == 2) {
+        ideas.add({'title': 'Small Win', 'body': 'One good choice is enough.'});
       }
     } else {
       // Generic ideas for skip users
@@ -339,7 +351,7 @@ class _HomeTabState extends State<_HomeTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Good Morning, $_userName!',
+            '${_getGreeting()}, $_userName!',
             style: const TextStyle(
               fontFamily: 'Alkalami',
               fontSize: 26,
@@ -402,11 +414,14 @@ class _HomeTabState extends State<_HomeTab> {
                 const SizedBox(height: 6),
                 Text(
                   _cardDescription,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppTheme.textSecondary,
+                    height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -486,7 +501,7 @@ class _HomeTabState extends State<_HomeTab> {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            height: 130,
+            height: 150,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _helpfulIdeas.length,
@@ -590,7 +605,7 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _HelpfulIdeaCard extends StatelessWidget {
+class _HelpfulIdeaCard extends StatefulWidget {
   const _HelpfulIdeaCard({required this.title, required this.body, Key? key})
     : super(key: key);
 
@@ -598,48 +613,79 @@ class _HelpfulIdeaCard extends StatelessWidget {
   final String body;
 
   @override
+  State<_HelpfulIdeaCard> createState() => _HelpfulIdeaCardState();
+}
+
+class _HelpfulIdeaCardState extends State<_HelpfulIdeaCard> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 140,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppTheme.cardBackground,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.primaryColor,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _expanded = !_expanded;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: _expanded ? 280 : 200,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppTheme.cardBackground,
+          borderRadius: BorderRadius.circular(16),
+          border: _expanded
+              ? Border.all(color: AppTheme.primaryColor, width: 2)
+              : null,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(_expanded ? 0.08 : 0.04),
+              blurRadius: _expanded ? 16 : 12,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: Text(
-              body,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: AppTheme.textSecondary,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                ),
+                Icon(
+                  _expanded ? Icons.expand_less : Icons.expand_more,
+                  size: 18,
+                  color: AppTheme.primaryColor,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: Text(
+                widget.body,
+                maxLines: _expanded ? 10 : 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: AppTheme.textSecondary,
+                  height: 1.4,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
