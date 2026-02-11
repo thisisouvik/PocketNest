@@ -94,14 +94,6 @@ class AppFlowCubit extends Cubit<AppFlowState> {
     }
   }
 
-  bool _isProfileComplete(Map<String, dynamic> profile) {
-    // Check if profile has required fields (customize based on your needs)
-    final requiredFields = ['full_name', 'email'];
-    return requiredFields.every(
-      (field) => profile.containsKey(field) && profile[field] != null,
-    );
-  }
-
   Future<void> completeOnboarding() async {
     if (_currentUserId == null) {
       return;

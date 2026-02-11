@@ -122,9 +122,10 @@ class _HomeTabState extends State<_HomeTab> {
   String _dailyTip = 'You\'re doing amazing! 💚';
   String _cardTitle = 'Today\'s focus';
   String _cardDescription = 'Let us make one gentle plan.';
-  bool _isLoading = true;
   bool _skippedOnboarding = false;
   Map<String, dynamic>? _onboardingData;
+  List<Map<String, String>> _helpfulIdeas = [];
+  double _progressValue = 0.0;
 
   @override
   void initState() {
@@ -234,17 +235,100 @@ class _HomeTabState extends State<_HomeTab> {
         skippedOnboarding: _skippedOnboarding,
       );
 
+      // Generate 2-3 helpful ideas based on onboarding
+      final ideas = _generateHelpfulIdeas();
+
+      // Calculate progress (simulated)
+      final progress = _calculateProgress();
+
       setState(() {
         _dailyTip = tip;
         _cardTitle = title;
         _cardDescription = description;
-        _isLoading = false;
+        _helpfulIdeas = ideas;
+        _progressValue = progress;
       });
     } catch (e) {
-      setState(() {
-        _isLoading = false;
+      // Error handled silently, display defaults
+    }
+  }
+
+  List<Map<String, String>> _generateHelpfulIdeas() {
+    final ideas = <Map<String, String>>[];
+
+    if (_onboardingData != null) {
+      // Based on groceries/money stretch concern
+      if (_onboardingData!['money_stretch']?['value'] == 'stretch') {
+        ideas.add({
+          'title': 'Grocery Hack',
+          'body': 'List staples by meal. Cuts impulse spending.',
+        });
+      }
+
+      // Based on time available
+      if (_onboardingData!['time_available']?['value'] == 'limited') {
+        ideas.add({
+          'title': '5-Min Check-in',
+          'body': 'Quick spend review before bed.',
+        });
+      }
+
+      // Based on who they're saving for
+      if (_onboardingData!['who_for'] != null) {
+        late String forWho;
+        try {
+          forWho = _onboardingData!['who_for']?['value'] ?? 'family';
+        } catch (_) {
+          forWho = 'family';
+        }
+        ideas.add({
+          'title': 'Gentle Goal',
+          'body': 'One small step toward your $forWho goal today.',
+        });
+      }
+
+      // If less than 3 ideas, add generic fallbacks
+      if (ideas.isEmpty) {
+        ideas.add({
+          'title': 'Daily Check-in',
+          'body': 'Notice one money moment today.',
+        });
+      }
+      if (ideas.length < 2) {
+        ideas.add({
+          'title': 'Comfort Zone',
+          'body': 'Learn at your pace. No rush.',
+        });
+      }
+      if (ideas.length < 3) {
+        ideas.add({
+          'title': 'Small Win',
+          'body': 'One good choice is enough.',
+        });
+      }
+    } else {
+      // Generic ideas for skip users
+      ideas.add({
+        'title': 'Grocery Smart',
+        'body': 'Plan meals → saves money & time.',
+      });
+      ideas.add({
+        'title': 'Progress Track',
+        'body': 'One small money choice today.',
+      });
+      ideas.add({
+        'title': 'Comfort Zone',
+        'body': 'Learn at your pace. No rush.',
       });
     }
+
+    return ideas.take(3).toList();
+  }
+
+  double _calculateProgress() {
+    // Simulated progress calculation
+    // In real app: fetch from DB
+    return 0.43; // ~3 of 7 tasks
   }
 
   @override
@@ -307,7 +391,7 @@ class _HomeTabState extends State<_HomeTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Small win for Today',
+                  'Small win for today',
                   style: TextStyle(
                     fontFamily: 'Alkalami',
                     fontSize: 20,
@@ -316,9 +400,9 @@ class _HomeTabState extends State<_HomeTab> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Try a 10-minute grocery check-in before dinner.',
-                  style: TextStyle(
+                Text(
+                  _cardDescription,
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -327,20 +411,22 @@ class _HomeTabState extends State<_HomeTab> {
                 ),
                 const SizedBox(height: 12),
                 Row(
-                  children: const [
-                    Icon(
+                  children: [
+                    const Icon(
                       Icons.savings_outlined,
                       size: 18,
                       color: AppTheme.primaryColor,
                     ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Estimated savings: Rs. 250 this week',
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.textPrimary,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Small, consistent steps build confidence',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.textPrimary.withOpacity(0.8),
+                        ),
                       ),
                     ),
                   ],
@@ -359,7 +445,7 @@ class _HomeTabState extends State<_HomeTab> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: const Text(
-                      'Try this',
+                      'Start',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 15,
@@ -371,38 +457,54 @@ class _HomeTabState extends State<_HomeTab> {
               ],
             ),
           ),
-          const SizedBox(height: 18),
-          const Text(
-            'Supportive ideas',
-            style: TextStyle(
-              fontFamily: 'Alkalami',
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: AppTheme.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 120,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: const [
-                _MiniCard(
-                  title: 'Save idea',
-                  body: 'Plan snacks for two days ahead.',
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'A few gentle ideas',
+                  style: TextStyle(
+                    fontFamily: 'Alkalami',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.textPrimary,
+                  ),
                 ),
-                _MiniCard(
-                  title: 'Good to know',
-                  body: 'Track small spends once this week.',
-                ),
-                _MiniCard(
-                  title: 'Learn at your pace',
-                  body: 'Understand grocery staples in 5 mins.',
+                Text(
+                  'Updated today',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.textSecondary.withOpacity(0.7),
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 130,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _helpfulIdeas.length,
+              itemBuilder: (context, index) {
+                final idea = _helpfulIdeas[index];
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: index < _helpfulIdeas.length - 1 ? 12 : 0,
+                  ),
+                  child: _HelpfulIdeaCard(
+                    title: idea['title']!,
+                    body: idea['body']!,
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 24),
           _SectionCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,38 +518,40 @@ class _HomeTabState extends State<_HomeTab> {
                     color: AppTheme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  '3 of 7 calm money check-ins completed this week.',
-                  style: TextStyle(
+                const SizedBox(height: 12),
+                Text(
+                  '${(_progressValue * 100).toStringAsFixed(0)}% of your weekly check-ins done',
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: AppTheme.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   child: LinearProgressIndicator(
-                    value: 0.45,
-                    minHeight: 8,
-                    backgroundColor: AppTheme.borderColor.withOpacity(0.4),
+                    value: _progressValue,
+                    minHeight: 6,
+                    backgroundColor: AppTheme.borderColor.withOpacity(0.3),
                     valueColor: const AlwaysStoppedAnimation<Color>(
                       AppTheme.primaryColor,
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'View details',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.primaryColor,
+                Center(
+                  child: TextButton(
+                    onPressed: () {},
+                    child: const Text(
+                      'View details →',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryColor,
+                      ),
                     ),
                   ),
                 ),
@@ -486,6 +590,62 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
+class _HelpfulIdeaCard extends StatelessWidget {
+  const _HelpfulIdeaCard({required this.title, required this.body, Key? key})
+    : super(key: key);
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppTheme.primaryColor,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: Text(
+              body,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: unused_element
 class _MiniCard extends StatelessWidget {
   const _MiniCard({required this.title, required this.body});
 
