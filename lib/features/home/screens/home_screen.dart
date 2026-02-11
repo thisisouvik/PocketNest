@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
+import 'package:pocketnest/features/grow/screens/grow_screen.dart';
 import 'package:pocketnest/features/save/screens/save_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -88,10 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 1:
         return SaveTab(key: ValueKey('save_tab'), userId: widget.userId);
       case 2:
-        return const _PlaceholderTab(
-          key: ValueKey('grow_tab'),
-          label: 'Grow tools are coming here.',
-        );
+        return GrowTab(key: ValueKey('grow_tab'), userId: widget.userId);
       case 3:
         return const _PlaceholderTab(
           key: ValueKey('community_tab'),
