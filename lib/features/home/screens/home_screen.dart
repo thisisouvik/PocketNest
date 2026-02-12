@@ -459,8 +459,10 @@ class _HomeTabState extends State<_HomeTab> {
                     onPressed: () async {
                       final completed = await Navigator.of(context).push<bool>(
                         PageRouteBuilder(
-                          pageBuilder: (_, __, ___) =>
-                              const TodaysGentleStepScreen(),
+                          pageBuilder: (_, __, ___) => TodaysGentleStepScreen(
+                            onboardingData: _onboardingData,
+                            skippedOnboarding: _skippedOnboarding,
+                          ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
                                 final offset = Tween<Offset>(

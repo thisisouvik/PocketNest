@@ -2,18 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 
 class TodaysGentleStepScreen extends StatefulWidget {
-  const TodaysGentleStepScreen({super.key});
+  const TodaysGentleStepScreen({
+    super.key,
+    this.onboardingData,
+    this.skippedOnboarding = false,
+  });
+
+  final Map<String, dynamic>? onboardingData;
+  final bool skippedOnboarding;
 
   @override
   State<TodaysGentleStepScreen> createState() => _TodaysGentleStepScreenState();
 }
 
 class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
-  bool _checkedItem = false;
-  bool _checkedCompare = false;
-  bool _checkedChoose = false;
+  late final _GentleTask _task;
+  late List<bool> _stepChecks;
   bool _completed = false;
   final TextEditingController _reflectionController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _task = _selectTask();
+    _stepChecks = List<bool>.filled(_task.steps.length, false);
+  }
 
   @override
   void dispose() {
@@ -21,7 +34,7 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
     super.dispose();
   }
 
-  bool get _allChecked => _checkedItem && _checkedCompare && _checkedChoose;
+  bool get _allChecked => _stepChecks.every((step) => step);
 
   void _markCompleted() {
     setState(() {
@@ -69,8 +82,8 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Swap one grocery item today',
+                  Text(
+                    _task.title,
                     style: TextStyle(
                       fontFamily: 'Alkalami',
                       fontSize: 20,
@@ -88,8 +101,8 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
                       color: AppTheme.primaryColor.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text(
-                      'Estimated savings: \$6 this week',
+                    child: Text(
+                      _task.savings,
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 11,
@@ -99,9 +112,8 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Choose one regularly purchased item and check if a similar '
-                    'lower-cost alternative is available.',
+                  Text(
+                    _task.description,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 13,
@@ -111,32 +123,17 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  _ChecklistRow(
-                    label: 'Identify one item you buy often',
-                    value: _checkedItem,
-                    onChanged: (value) {
-                      setState(() {
-                        _checkedItem = value;
-                      });
-                    },
-                  ),
-                  _ChecklistRow(
-                    label: 'Compare price with similar option',
-                    value: _checkedCompare,
-                    onChanged: (value) {
-                      setState(() {
-                        _checkedCompare = value;
-                      });
-                    },
-                  ),
-                  _ChecklistRow(
-                    label: 'Choose lower-cost alternative',
-                    value: _checkedChoose,
-                    onChanged: (value) {
-                      setState(() {
-                        _checkedChoose = value;
-                      });
-                    },
+                  ...List.generate(
+                    _task.steps.length,
+                    (index) => _ChecklistRow(
+                      label: _task.steps[index],
+                      value: _stepChecks[index],
+                      onChanged: (value) {
+                        setState(() {
+                          _stepChecks[index] = value;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -159,7 +156,7 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
                   TextField(
                     controller: _reflectionController,
                     decoration: InputDecoration(
-                      hintText: 'What did you switch?',
+                      hintText: _task.reflectionHint,
                       hintStyle: const TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12,
@@ -269,6 +266,124 @@ class _TodaysGentleStepScreenState extends State<TodaysGentleStepScreen> {
       ],
     );
   }
+
+  _GentleTask _selectTask() {
+    if (widget.skippedOnboarding || widget.onboardingData == null) {
+      return _GentleTask.defaultTask;
+    }
+
+    final data = widget.onboardingData!;
+    final moneyStretch = _getValue(data, 'money_stretch');
+    final timeAvailable = _getValue(data, 'time_available');
+    final shoppingStyle = _getValue(data, 'shopping_style');
+    final growthPreference = _getValue(data, 'growth_preference');
+
+    if (moneyStretch == 'Everyday essentials' ||
+        moneyStretch == 'Housing and utilities') {
+      return _GentleTask.grocerySwap;
+    }
+
+    if (timeAvailable == 'Just a few minutes') {
+      return _GentleTask.quickBillCheck;
+    }
+
+    if (shoppingStyle == 'Often last-minute') {
+      return _GentleTask.planOneMeal;
+    }
+
+    if (growthPreference == 'Learning more before deciding') {
+      return _GentleTask.learnOneTerm;
+    }
+
+    return _GentleTask.defaultTask;
+  }
+
+  String _getValue(Map<String, dynamic> data, String key) {
+    final entry = data[key];
+    if (entry is Map && entry['value'] != null) {
+      return entry['value'].toString();
+    }
+    return entry?.toString() ?? '';
+  }
+}
+
+class _GentleTask {
+  const _GentleTask({
+    required this.title,
+    required this.savings,
+    required this.description,
+    required this.steps,
+    required this.reflectionHint,
+  });
+
+  final String title;
+  final String savings;
+  final String description;
+  final List<String> steps;
+  final String reflectionHint;
+
+  static const _GentleTask grocerySwap = _GentleTask(
+    title: 'Swap one grocery item today',
+    savings: 'Estimated savings: \$6 this week',
+    description:
+        'Choose one regularly purchased item and check a lower-cost option.',
+    steps: [
+      'Identify one item you buy often',
+      'Compare price with a similar option',
+      'Choose the lower-cost alternative',
+    ],
+    reflectionHint: 'What did you switch?',
+  );
+
+  static const _GentleTask quickBillCheck = _GentleTask(
+    title: 'Review one recurring bill',
+    savings: 'Estimated savings: \$5 this week',
+    description: 'Open one bill and check for a small fee or plan adjustment.',
+    steps: [
+      'Pick one bill you pay monthly',
+      'Check for small fees or upgrades',
+      'Note one possible savings tweak',
+    ],
+    reflectionHint: 'Which bill did you review?',
+  );
+
+  static const _GentleTask planOneMeal = _GentleTask(
+    title: 'Plan one low-cost meal',
+    savings: 'Estimated savings: \$7 this week',
+    description: 'Pick one simple meal and list just the essentials you need.',
+    steps: [
+      'Choose one meal for the week',
+      'List only the needed ingredients',
+      'Skip extras you already have',
+    ],
+    reflectionHint: 'What meal did you plan?',
+  );
+
+  static const _GentleTask learnOneTerm = _GentleTask(
+    title: 'Learn one money term',
+    savings: 'Estimated savings: \$4 this week',
+    description:
+        'Pick one term you hear often and learn its simple definition.',
+    steps: [
+      'Choose one term you hear often',
+      'Read a short, simple definition',
+      'Write one sentence in your words',
+    ],
+    reflectionHint: 'Which term did you learn?',
+  );
+
+  static const _GentleTask defaultTask = _GentleTask(
+    title: 'Track one small spend',
+    savings: 'Estimated savings: \$3 this week',
+    description:
+        'Notice one small expense today and record it to build awareness.',
+    steps: [
+      'Pick one small purchase today',
+      'Write down the amount',
+      'Decide if it felt worth it',
+    ],
+    reflectionHint: 'What did you notice today?',
+  );
 }
 
 class _SectionCard extends StatelessWidget {
