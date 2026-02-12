@@ -3,6 +3,7 @@ import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
 import 'package:pocketnest/features/community/screens/community_screen.dart';
 import 'package:pocketnest/features/grow/screens/grow_screen.dart';
+import 'package:pocketnest/features/profile/screens/profile_screen.dart';
 import 'package:pocketnest/features/save/screens/save_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -97,10 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
           userId: widget.userId,
         );
       default:
-        return const _PlaceholderTab(
-          key: ValueKey('me_tab'),
-          label: 'Your profile will appear here.',
-        );
+        return ProfileTab(key: const ValueKey('me_tab'), userId: widget.userId);
     }
   }
 }
@@ -745,27 +743,6 @@ class _MiniCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: AppTheme.textSecondary,
-        ),
       ),
     );
   }
