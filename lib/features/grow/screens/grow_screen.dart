@@ -198,6 +198,7 @@ class _GrowTabState extends State<GrowTab> with TickerProviderStateMixin {
           isExpanded: _expandedStageIndex == 1,
           isLocked: !stage2Unlocked,
           showProgress: false,
+          unlockProgress: _stageProgress(0),
           lockMessage: 'Complete most of Stage 1 to unlock.',
         ),
         const SizedBox(height: 10),
@@ -262,6 +263,7 @@ class _GrowTabState extends State<GrowTab> with TickerProviderStateMixin {
     required bool isExpanded,
     required bool isLocked,
     required bool showProgress,
+    double? unlockProgress,
     bool isPremium = false,
     String? lockMessage,
   }) {
@@ -345,6 +347,35 @@ class _GrowTabState extends State<GrowTab> with TickerProviderStateMixin {
               color: AppTheme.textSecondary,
             ),
           ),
+          if (unlockProgress != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Unlock progress ${(unlockProgress * 100).round()}%',
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOut,
+              tween: Tween<double>(begin: 0, end: unlockProgress),
+              builder: (context, value, child) => ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: LinearProgressIndicator(
+                  value: value,
+                  minHeight: 5,
+                  backgroundColor: AppTheme.borderColor.withOpacity(0.2),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppTheme.primaryColor,
+                  ),
+                ),
+              ),
+            ),
+          ],
           if (showProgress) ...[
             const SizedBox(height: 10),
             TweenAnimationBuilder<double>(
