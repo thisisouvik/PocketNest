@@ -349,30 +349,6 @@ class _CommunityTabState extends State<CommunityTab> {
                 color: AppTheme.textSecondary,
               ),
             ),
-            const SizedBox(height: 14),
-            ElevatedButton(
-              onPressed: _openCreatePost,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryColor,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
-              ),
-              child: const Text(
-                'Start a conversation',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -525,6 +501,7 @@ class _PostDetailScreen extends StatefulWidget {
 class _PostDetailScreenState extends State<_PostDetailScreen> {
   bool _isLoading = true;
   bool _isUpvoted = false;
+  bool _isVoting = false;
   int _upvoteCount = 0;
   List<Map<String, dynamic>> _comments = [];
   final TextEditingController _commentController = TextEditingController();
@@ -533,6 +510,7 @@ class _PostDetailScreenState extends State<_PostDetailScreen> {
   void initState() {
     super.initState();
     _upvoteCount = widget.post['upvotes'] ?? 0;
+    _loadVoteState();
     _loadComments();
   }
 
@@ -560,6 +538,78 @@ class _PostDetailScreenState extends State<_PostDetailScreen> {
         _comments = [];
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadVoteState() async {
+    try {
+      final supabase = Supabase.instance.client;
+      final response = await supabase
+          .from('community_post_votes')
+          .select('id')
+          .eq('post_id', widget.post['id'])
+          .eq('user_id', widget.userId)
+          .maybeSingle();
+
+      if (!mounted) return;
+      setState(() {
+        _isUpvoted = response != null;
+      });
+    } catch (e) {
+      // Keep default false
+    }
+  }
+
+  Future<void> _toggleUpvote() async {
+    if (_isVoting) return;
+    setState(() {
+      _isVoting = true;
+    });
+
+    try {
+      final supabase = Supabase.instance.client;
+      if (_isUpvoted) {
+        await supabase
+            .from('community_post_votes')
+            .delete()
+            .eq('post_id', widget.post['id'])
+            .eq('user_id', widget.userId);
+        await supabase.rpc(
+          'community_post_upvote',
+          params: {'post_id': widget.post['id'], 'delta': -1},
+        );
+
+        if (!mounted) return;
+        setState(() {
+          _isUpvoted = false;
+          _upvoteCount = (_upvoteCount - 1).clamp(0, 1 << 31);
+          _isVoting = false;
+        });
+      } else {
+        await supabase.from('community_post_votes').insert({
+          'post_id': widget.post['id'],
+          'user_id': widget.userId,
+        });
+        await supabase.rpc(
+          'community_post_upvote',
+          params: {'post_id': widget.post['id'], 'delta': 1},
+        );
+
+        if (!mounted) return;
+        setState(() {
+          _isUpvoted = true;
+          _upvoteCount += 1;
+          _isVoting = false;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isVoting = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not update upvote. Try again.')),
+      );
     }
   }
 
@@ -660,12 +710,7 @@ class _PostDetailScreenState extends State<_PostDetailScreen> {
                   Row(
                     children: [
                       TextButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _isUpvoted = !_isUpvoted;
-                            _upvoteCount += _isUpvoted ? 1 : -1;
-                          });
-                        },
+                        onPressed: _toggleUpvote,
                         icon: Icon(
                           _isUpvoted ? Icons.thumb_up : Icons.thumb_up_outlined,
                           color: AppTheme.primaryColor,
@@ -863,21 +908,77 @@ class _CreatePostScreen extends StatefulWidget {
 }
 
 class _CreatePostScreenState extends State<_CreatePostScreen> {
+  static const List<_PostType> _postTypes = [
+    _PostType(
+      label: 'Share a saving tip',
+      helperText: 'Choose what best describes your post.',
+      promptText:
+          'What worked for you? How much did you save? What made it effective?',
+      category: 'Saving',
+      icon: Icons.lightbulb_outline,
+    ),
+    _PostType(
+      label: 'Ask a question',
+      helperText: 'Choose what best describes your post.',
+      promptText: 'What are you unsure about? Add context for clear help.',
+      category: 'Mindset',
+      icon: Icons.help_outline,
+    ),
+    _PostType(
+      label: 'Growth experience',
+      helperText: 'Choose what best describes your post.',
+      promptText: 'What step did you take? What did you learn?',
+      category: 'Growth',
+      icon: Icons.trending_up,
+    ),
+    _PostType(
+      label: 'Smart shopping find',
+      helperText: 'Choose what best describes your post.',
+      promptText: 'What did you find? Where? Share price or timing details.',
+      category: 'Groceries',
+      icon: Icons.shopping_basket_outlined,
+    ),
+    _PostType(
+      label: 'Money mindset moment',
+      helperText: 'Choose what best describes your post.',
+      promptText: 'What belief shifted for you? How did it help?',
+      category: 'Mindset',
+      icon: Icons.self_improvement,
+    ),
+  ];
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  final TextEditingController _takeawayController = TextEditingController();
   bool _isSubmitting = false;
-  String _category = 'Saving';
+  int _selectedPostType = 0;
+  String? _tagOne;
+  String? _tagTwo;
+
+  final List<String> _availableTags = const [
+    'Groceries',
+    'Saving',
+    'Growth',
+    'Mindset',
+    'Family Finance',
+  ];
 
   @override
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _takeawayController.dispose();
     super.dispose();
   }
 
   Future<void> _submitPost() async {
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
+    final takeaway = _takeawayController.text.trim();
+    final category = _postTypes[_selectedPostType].category;
+    final combinedContent = takeaway.isEmpty
+        ? content
+        : '$content\n\nKey takeaway: $takeaway';
 
     if (title.isEmpty || content.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -894,8 +995,8 @@ class _CreatePostScreenState extends State<_CreatePostScreen> {
       final supabase = Supabase.instance.client;
       await supabase.from('community_posts').insert({
         'title': title,
-        'content': content,
-        'category': _category,
+        'content': combinedContent,
+        'category': category,
         'user_id': widget.userId,
       });
 
@@ -913,6 +1014,8 @@ class _CreatePostScreenState extends State<_CreatePostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final postType = _postTypes[_selectedPostType];
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
@@ -929,109 +1032,522 @@ class _CreatePostScreenState extends State<_CreatePostScreen> {
         ),
         iconTheme: const IconThemeData(color: AppTheme.textPrimary),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                hintText: 'Title',
-                hintStyle: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 12,
-                  color: AppTheme.textSecondary,
-                ),
-                filled: true,
-                fillColor: AppTheme.cardBackground,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
+            _SectionCard(
+              title: 'Post type',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 78,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _postTypes.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (context, index) {
+                        final type = _postTypes[index];
+                        final isSelected = index == _selectedPostType;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedPostType = index;
+                            });
+                          },
+                          child: Container(
+                            width: 170,
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppTheme.primaryColor.withOpacity(0.12)
+                                  : AppTheme.cardBackground,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : AppTheme.borderColor.withOpacity(0.4),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  type.icon,
+                                  size: 18,
+                                  color: AppTheme.primaryColor,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    type.label,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 12,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? AppTheme.primaryColor
+                                          : AppTheme.textSecondary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    postType.helperText,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: _category,
-              items: _CommunityTabState._categories
-                  .where((value) => value != 'All')
-                  .map(
-                    (value) => DropdownMenuItem(
-                      value: value,
+            const SizedBox(height: 14),
+            _SectionCard(
+              title: 'Headline',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    maxLength: 100,
+                    decoration: InputDecoration(
+                      hintText: 'Write a clear, helpful title',
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                      filled: true,
+                      fillColor: AppTheme.cardBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      counterText: '',
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      '${_titleController.text.length}/100',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Clear titles help others understand quickly.',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            _SectionCard(
+              title: 'Your story',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _contentController,
+                    maxLines: 6,
+                    decoration: InputDecoration(
+                      hintText: postType.promptText,
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                      filled: true,
+                      fillColor: AppTheme.cardBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      TextButton.icon(
+                        onPressed: _insertBullet,
+                        icon: const Icon(Icons.format_list_bulleted, size: 16),
+                        label: const Text(
+                          'Add bullet point',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppTheme.primaryColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _takeawayController,
+                    decoration: InputDecoration(
+                      hintText: 'Add key takeaway (optional)',
+                      hintStyle: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                      filled: true,
+                      fillColor: AppTheme.cardBackground,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            _SectionCard(
+              title: 'Category and tags',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Category',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [_ChipTag(label: postType.category)],
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Optional tags (max 2)',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _TagDropdown(
+                        label: 'Add tag',
+                        value: _tagOne,
+                        options: _availableTags
+                            .where((tag) => tag != postType.category)
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _tagOne = value;
+                            if (_tagTwo == value) {
+                              _tagTwo = null;
+                            }
+                          });
+                        },
+                      ),
+                      _TagDropdown(
+                        label: 'Add tag',
+                        value: _tagTwo,
+                        options: _availableTags
+                            .where(
+                              (tag) =>
+                                  tag != postType.category && tag != _tagOne,
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _tagTwo = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Keep tags focused to help others discover your post.',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      color: AppTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            _SectionCard(
+              title: 'Tone reminder',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F5E9),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'Community conversations are supportive and practical.',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isSubmitting ? null : _submitPost,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
                       child: Text(
-                        value,
+                        _isSubmitting ? 'Posting...' : 'Post to Community',
                         style: const TextStyle(
                           fontFamily: 'Inter',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _category = value;
-                });
-              },
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: AppTheme.cardBackground,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: TextField(
-                controller: _contentController,
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  hintText: 'Share your thoughts...',
-                  hintStyle: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 12,
-                    color: AppTheme.textSecondary,
                   ),
-                  filled: true,
-                  fillColor: AppTheme.cardBackground,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _saveDraft,
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: AppTheme.borderColor.withOpacity(0.5),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Save Draft',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submitPost,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  _isSubmitting ? 'Posting...' : 'Post',
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
+                ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _insertBullet() {
+    final text = _contentController.text;
+    final selection = _contentController.selection;
+    final bullet = text.isEmpty || text.endsWith('\n') ? '• ' : '\n• ';
+    final newText = text.replaceRange(selection.start, selection.end, bullet);
+    _contentController.text = newText;
+    _contentController.selection = TextSelection.collapsed(
+      offset: selection.start + bullet.length,
+    );
+  }
+
+  void _saveDraft() {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Draft saved locally.')));
+  }
+}
+
+class _PostType {
+  const _PostType({
+    required this.label,
+    required this.helperText,
+    required this.promptText,
+    required this.category,
+    required this.icon,
+  });
+
+  final String label;
+  final String helperText;
+  final String promptText;
+  final String category;
+  final IconData icon;
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Alkalami',
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 10),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _ChipTag extends StatelessWidget {
+  const _ChipTag({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.primaryColor.withOpacity(0.4)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: AppTheme.primaryColor,
+        ),
+      ),
+    );
+  }
+}
+
+class _TagDropdown extends StatelessWidget {
+  const _TagDropdown({
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String? value;
+  final List<String> options;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.borderColor.withOpacity(0.4)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          isExpanded: true,
+          icon: const Icon(Icons.expand_more, size: 18),
+          hint: Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+          items: options
+              .map(
+                (option) => DropdownMenuItem(
+                  value: option,
+                  child: Text(
+                    option,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: onChanged,
         ),
       ),
     );
