@@ -717,18 +717,21 @@ class _GrowTabState extends State<GrowTab> with TickerProviderStateMixin {
               const SizedBox(height: 10),
               _LearningBiteCard(
                 title: 'What is compounding?',
+                description: 'How money grows on top of growth.',
                 duration: '2 min read',
                 icon: Icons.auto_graph,
               ),
               const SizedBox(height: 8),
               _LearningBiteCard(
                 title: 'Why diversification protects you',
+                description: 'Spread risk so one dip matters less.',
                 duration: '3 min read',
                 icon: Icons.pie_chart_outline,
               ),
               const SizedBox(height: 8),
               _LearningBiteCard(
                 title: 'How risk changes with time',
+                description: 'Short vs long horizons feel different.',
                 duration: '2 min read',
                 icon: Icons.timeline,
               ),
@@ -907,11 +910,13 @@ class _GrowthSnapshotCard extends StatelessWidget {
 class _LearningBiteCard extends StatelessWidget {
   const _LearningBiteCard({
     required this.title,
+    required this.description,
     required this.duration,
     required this.icon,
   });
 
   final String title;
+  final String description;
   final String duration;
   final IconData icon;
 
@@ -961,6 +966,19 @@ class _LearningBiteCard extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                      color: AppTheme.textSecondary,
+                      height: 1.4,
                     ),
                   ),
                   const SizedBox(height: 4),
