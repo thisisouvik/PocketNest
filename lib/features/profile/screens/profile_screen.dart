@@ -63,6 +63,22 @@ class _ProfileTabState extends State<ProfileTab> {
     _loadProfileData();
   }
 
+  Future<void> _openEditAccount() async {
+    final updated = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => _EditAccountScreen(
+          userId: widget.userId,
+          initialName: _profile?['full_name']?.toString() ?? '',
+          initialEmail: _profile?['email']?.toString() ?? '',
+        ),
+      ),
+    );
+
+    if (updated == true) {
+      _loadProfileData();
+    }
+  }
+
   String _getDisplayName() {
     final profileName = _profile?['full_name']?.toString().trim() ?? '';
     if (profileName.isNotEmpty) return profileName;
@@ -225,11 +241,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Edit account soon.')),
-                        );
-                      },
+                      onPressed: _openEditAccount,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
                           color: AppTheme.borderColor.withOpacity(0.6),
@@ -795,6 +807,209 @@ class _ToggleRow extends StatelessWidget {
         const SizedBox(height: 6),
         Divider(color: AppTheme.borderColor.withOpacity(0.3), height: 1),
         const SizedBox(height: 6),
+      ],
+    );
+  }
+}
+
+class _EditAccountScreen extends StatefulWidget {
+  const _EditAccountScreen({
+    required this.userId,
+    required this.initialName,
+    required this.initialEmail,
+  });
+
+  final String userId;
+  final String initialName;
+  final String initialEmail;
+
+  @override
+  State<_EditAccountScreen> createState() => _EditAccountScreenState();
+}
+
+class _EditAccountScreenState extends State<_EditAccountScreen> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialName);
+    _emailController = TextEditingController(text: widget.initialEmail);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveAccount() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+
+    if (name.isEmpty && email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Add a name or email to save.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final supabase = Supabase.instance.client;
+      final update = <String, dynamic>{'full_name': name, 'email': email};
+      await supabase.from('profiles').update(update).eq('id', widget.userId);
+
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isSaving = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not save account. Try again.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppTheme.backgroundColor,
+        elevation: 0,
+        title: const Text(
+          'Edit account',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: AppTheme.textPrimary),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Account details',
+              style: TextStyle(
+                fontFamily: 'Alkalami',
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Keep your details current for smooth access.',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            _EditField(
+              label: 'Full name',
+              controller: _nameController,
+              hintText: 'Your name',
+            ),
+            const SizedBox(height: 12),
+            _EditField(
+              label: 'Email',
+              controller: _emailController,
+              hintText: 'you@example.com',
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isSaving ? null : _saveAccount,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  _isSaving ? 'Saving...' : 'Save changes',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EditField extends StatelessWidget {
+  const _EditField({
+    required this.label,
+    required this.controller,
+    required this.hintText,
+    this.keyboardType,
+  });
+
+  final String label;
+  final TextEditingController controller;
+  final String hintText;
+  final TextInputType? keyboardType;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              color: AppTheme.textSecondary,
+            ),
+            filled: true,
+            fillColor: AppTheme.cardBackground,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
       ],
     );
   }
