@@ -3,6 +3,7 @@ import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
 import 'package:pocketnest/features/community/screens/community_screen.dart';
 import 'package:pocketnest/features/grow/screens/grow_screen.dart';
+import 'package:pocketnest/features/home/screens/todays_gentle_step_screen.dart';
 import 'package:pocketnest/features/profile/screens/profile_screen.dart';
 import 'package:pocketnest/features/save/screens/save_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -455,7 +456,37 @@ class _HomeTabState extends State<_HomeTab> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final completed = await Navigator.of(context).push<bool>(
+                        PageRouteBuilder(
+                          pageBuilder: (_, __, ___) =>
+                              const TodaysGentleStepScreen(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                                final offset = Tween<Offset>(
+                                  begin: const Offset(0, 0.05),
+                                  end: Offset.zero,
+                                ).animate(animation);
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: SlideTransition(
+                                    position: offset,
+                                    child: child,
+                                  ),
+                                );
+                              },
+                        ),
+                      );
+
+                      if (completed == true) {
+                        setState(() {
+                          _progressValue = (_progressValue + 0.1).clamp(
+                            0.0,
+                            1.0,
+                          );
+                        });
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryColor,
                       foregroundColor: Colors.white,
