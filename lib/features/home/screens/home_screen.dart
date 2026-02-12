@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
+import 'package:pocketnest/features/community/screens/community_screen.dart';
 import 'package:pocketnest/features/grow/screens/grow_screen.dart';
 import 'package:pocketnest/features/save/screens/save_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -91,9 +92,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 2:
         return GrowTab(key: ValueKey('grow_tab'), userId: widget.userId);
       case 3:
-        return const _PlaceholderTab(
-          key: ValueKey('community_tab'),
-          label: 'Community space is coming here.',
+        return CommunityTab(
+          key: const ValueKey('community_tab'),
+          userId: widget.userId,
         );
       default:
         return const _PlaceholderTab(
