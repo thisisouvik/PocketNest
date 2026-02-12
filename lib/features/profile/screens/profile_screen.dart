@@ -45,6 +45,10 @@ class _ProfileTabState extends State<ProfileTab> {
         _onboardingData = onboardingResponse?['responses'] != null
             ? Map<String, dynamic>.from(onboardingResponse?['responses'])
             : null;
+        _notificationsEnabled =
+            (profileResponse?['notifications_enabled'] as bool?) ?? true;
+        _autoRefreshEnabled =
+            (profileResponse?['auto_refresh_enabled'] as bool?) ?? true;
         _isLoading = false;
       });
     } catch (e) {
@@ -94,6 +98,21 @@ class _ProfileTabState extends State<ProfileTab> {
   bool _isPremium() {
     final value = _profile?['is_premium'];
     return value is bool ? value : false;
+  }
+
+  Future<void> _updateSetting(String field, bool value) async {
+    try {
+      final supabase = Supabase.instance.client;
+      await supabase
+          .from('profiles')
+          .update({field: value})
+          .eq('id', widget.userId);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not save setting. Try again.')),
+      );
+    }
   }
 
   String _getOnboardingValue(String key) {
@@ -481,6 +500,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         setState(() {
                           _notificationsEnabled = value;
                         });
+                        _updateSetting('notifications_enabled', value);
                       },
                     ),
                     _ToggleRow(
@@ -490,6 +510,7 @@ class _ProfileTabState extends State<ProfileTab> {
                         setState(() {
                           _autoRefreshEnabled = value;
                         });
+                        _updateSetting('auto_refresh_enabled', value);
                       },
                     ),
                     _ActionRow(
