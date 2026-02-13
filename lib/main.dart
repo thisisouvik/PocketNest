@@ -61,11 +61,7 @@ class PocketNestApp extends StatelessWidget {
     } else if (state is UnauthenticatedState) {
       return const AuthScreen();
     } else if (state is ProfileIncompleteState) {
-      // TODO: Implement profile completion screen
-      return Scaffold(
-        appBar: AppBar(title: const Text('Complete Your Profile')),
-        body: const Center(child: Text('Profile Completion Screen')),
-      );
+      return HomeScreen(userId: state.userId);
     } else if (state is OnboardingState) {
       return OnboardingScreen(
         userId: state.userId,

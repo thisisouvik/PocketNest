@@ -73,8 +73,8 @@ class AppFlowCubit extends Cubit<AppFlowState> {
           'onboarding_completed': false,
         });
 
-        // Show onboarding
-        emit(OnboardingState(userId: userId));
+        // Allow entry even if profile is incomplete
+        emit(ProfileIncompleteState(userId: userId));
       } else {
         _currentUserId = userId;
         // Check if user has already completed onboarding
@@ -83,14 +83,14 @@ class AppFlowCubit extends Cubit<AppFlowState> {
           // User already did onboarding, go straight to home
           emit(AuthenticatedState(userId: userId));
         } else {
-          // User needs to complete onboarding
-          emit(OnboardingState(userId: userId));
+          // Profile is incomplete, allow login and prompt later
+          emit(ProfileIncompleteState(userId: userId));
         }
       }
     } catch (e) {
-      // If we can't check profile, show onboarding
+      // If we can't check profile, allow entry and prompt later
       _currentUserId = userId;
-      emit(OnboardingState(userId: userId));
+      emit(ProfileIncompleteState(userId: userId));
     }
   }
 
