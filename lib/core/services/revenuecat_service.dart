@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:pocketnest/config/environment_config.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
@@ -10,8 +11,13 @@ class RevenueCatService {
       ValueNotifier<CustomerInfo?>(null);
 
   static Future<void> initialize({String? appUserId}) async {
-    final apiKey = EnvironmentConfig.revenueCatApiKey;
+    final apiKey = EnvironmentConfig.revenueCatApiKey.trim();
     if (apiKey.isEmpty) {
+      return;
+    }
+
+    if (_looksLikeSecretKey(apiKey)) {
+      debugPrint('RevenueCat: secret key detected. Use the public SDK key.');
       return;
     }
 
@@ -20,14 +26,25 @@ class RevenueCatService {
         : LogLevel.debug;
     await Purchases.setLogLevel(logLevel);
 
-    final configuration = PurchasesConfiguration(apiKey);
-    await Purchases.configure(configuration);
+    try {
+      final configuration = PurchasesConfiguration(apiKey);
+      await Purchases.configure(configuration);
 
-    Purchases.addCustomerInfoUpdateListener((info) {
-      customerInfo.value = info;
-    });
+      Purchases.addCustomerInfoUpdateListener((info) {
+        customerInfo.value = info;
+      });
 
-    customerInfo.value = await Purchases.getCustomerInfo();
+      customerInfo.value = await Purchases.getCustomerInfo();
+    } on PlatformException catch (e) {
+      debugPrint('RevenueCat init failed: ${e.code} ${e.message}');
+    } catch (e) {
+      debugPrint('RevenueCat init failed: $e');
+    }
+  }
+
+  static bool _looksLikeSecretKey(String key) {
+    final lower = key.toLowerCase();
+    return lower.startsWith('sk_') || lower.contains('secret');
   }
 
   static Future<void> refreshCustomerInfo() async {
