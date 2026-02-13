@@ -820,9 +820,9 @@ Before submitting, ensure:
 
 ### Questions?
 
-- 💬 Open a [Discussion](https://github.com/yourusername/pocketnest/discussions)
-- 🐛 Report bugs in [Issues](https://github.com/yourusername/pocketnest/issues)
-- 📧 Email: your-email@example.com
+- 💬 Open a [Discussion](https://github.com/thisisouvik/pocketnest/discussions)
+- 🐛 Report bugs in [Issues](https://github.com/thisisouvik/pocketnest/issues)
+- 📧 Email: souvikmandals10@gmail.com
 
 ### Code of Conduct
 
@@ -830,13 +830,8 @@ Be respectful, inclusive, and constructive. We're all here to build something gr
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## � Copyright & License Notice
+## 🧷 Copyright & License Notice
 
 **Copyright © 2026 PocketNest. All rights reserved.**
 
