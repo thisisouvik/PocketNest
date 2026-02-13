@@ -15,6 +15,7 @@
   <p>A premium Flutter mobile application designed for busy parents who want to take control of their family finances in a calm, supportive way.</p>
   
   <p>📥 <strong><a href="https://drive.google.com/drive/folders/1Sy_2_ta4R1w8CoWNJgueayKPg09Qfo0W?usp=sharing">Download PocketNest APK</a></strong></p>
+  <p>📄 <strong><a href="https://drive.google.com/drive/folders/1O-ihD0P9FYkNGmhge_eh-WqlZ2kbgvTd?usp=sharing">All About PocketNest</a></strong></p>
 </div>
 
 ---
@@ -820,9 +821,9 @@ Before submitting, ensure:
 
 ### Questions?
 
-- 💬 Open a [Discussion](https://github.com/yourusername/pocketnest/discussions)
-- 🐛 Report bugs in [Issues](https://github.com/yourusername/pocketnest/issues)
-- 📧 Email: your-email@example.com
+- 💬 Open a [Discussion](https://github.com/thisisouvik/pocketnest/discussions)
+- 🐛 Report bugs in [Issues](https://github.com/thisisouvik/pocketnest/issues)
+- 📧 Email: souvikmandals10@gmail.com
 
 ### Code of Conduct
 
@@ -830,13 +831,8 @@ Be respectful, inclusive, and constructive. We're all here to build something gr
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## � Copyright & License Notice
+## 🧷 Copyright & License Notice
 
 **Copyright © 2026 PocketNest. All rights reserved.**
 
