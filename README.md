@@ -23,44 +23,44 @@
   <table>
     <tr>
       <td align="center">
-        <img src="assets/screens/splash_screen.png" width="200" alt="Splash Screen"/>
+        <img src="assets/screens/splash_screen.png" width="180" height="390" alt="Splash Screen"/>
         <br/>
         <sub><b>Splash Screen</b></sub>
       </td>
       <td align="center">
-        <img src="assets/screens/home_screen.png" width="200" alt="Home Screen"/>
+        <img src="assets/screens/home_screen.png" width="180" height="390" alt="Home Screen"/>
         <br/>
         <sub><b>Home Tab</b></sub>
       </td>
       <td align="center">
-        <img src="assets/screens/save_screen.png" width="200" alt="Save Screen"/>
+        <img src="assets/screens/save_screen.png" width="180" height="390" alt="Save Screen"/>
         <br/>
         <sub><b>Save Tab</b></sub>
       </td>
       <td align="center">
-        <img src="assets/screens/grow_screen.png" width="200" alt="Grow Screen"/>
+        <img src="assets/screens/grow_screen.png" width="180" height="390" alt="Grow Screen"/>
         <br/>
         <sub><b>Grow Tab</b></sub>
       </td>
     </tr>
     <tr>
       <td align="center">
-        <img src="assets/screens/community_tab.png" width="200" alt="Community Tab"/>
+        <img src="assets/screens/community_tab.png" width="180" height="390" alt="Community Tab"/>
         <br/>
         <sub><b>Community Tab</b></sub>
       </td>
       <td align="center">
-        <img src="assets/screens/start_conversion_incommunity.png" width="200" alt="Create Post"/>
+        <img src="assets/screens/start_conversion_incommunity.png" width="180" height="390" alt="Create Post"/>
         <br/>
         <sub><b>Create Post</b></sub>
       </td>
       <td align="center">
-        <img src="assets/screens/profile_tab.png" width="200" alt="Profile Tab"/>
+        <img src="assets/screens/profile_tab.png" width="180" height="390" alt="Profile Tab"/>
         <br/>
         <sub><b>Profile Tab</b></sub>
       </td>
       <td align="center">
-        <img src="assets/screens/paywall.png" width="200" alt="Paywall"/>
+        <img src="assets/screens/paywall.png" width="180" height="390" alt="Paywall"/>
         <br/>
         <sub><b>Premium Paywall</b></sub>
       </td>
@@ -833,7 +833,37 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🙏 Acknowledgments
+## � Copyright & License Notice
+
+**Copyright © 2026 PocketNest. All rights reserved.**
+
+This software and associated documentation files (the "Software") are provided under the MIT License.
+
+### MIT License Terms
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+- The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### Trademark Notice
+
+PocketNest™ and the PocketNest logo are trademarks of PocketNest. Unauthorized use is prohibited.
+
+### Third-Party Licenses
+
+This project uses open-source libraries and services. Each dependency retains its respective license:
+- Flutter (BSD-3-Clause)
+- Supabase (MIT)
+- RevenueCat (MIT)
+- Other dependencies as specified in `pubspec.yaml`
+
+For complete license information, see the [LICENSE](LICENSE) file.
+
+---
+
+## �🙏 Acknowledgments
 
 - Flutter team for the amazing framework
 - Supabase for backend infrastructure
@@ -844,7 +874,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-  <p>Made with ❤️ for busy parents managing family finances</p>
+  <p>Made with ❤️by for busy parents managing family finances</p>
   <p>
     <a href="https://github.com/yourusername/pocketnest">⭐ Star this repo</a> •
     <a href="https://github.com/yourusername/pocketnest/issues">🐛 Report Bug</a> •
