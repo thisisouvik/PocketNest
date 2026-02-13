@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
@@ -65,7 +64,7 @@ class _AuthScreenState extends State<AuthScreen>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SvgPicture.asset(AppAssets.appTextLogo, height: 44),
+                        Image.asset(AppAssets.appTextLogo, height: 44),
                         const SizedBox(height: 14),
                         Column(
                           children: [

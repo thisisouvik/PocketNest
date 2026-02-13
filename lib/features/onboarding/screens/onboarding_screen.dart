@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/app_assets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -56,7 +55,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _skip() async {
-
     if (widget.onCompleted != null) {
       await widget.onCompleted!();
       return;
@@ -105,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Column(
           children: [
             const SizedBox(height: 12),
-            SvgPicture.asset(AppAssets.appTextLogo, height: 36),
+            Image.asset(AppAssets.appTextLogo, height: 36),
             const SizedBox(height: 16),
             Expanded(
               child: PageView.builder(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/app_assets.dart';
 
@@ -50,11 +49,11 @@ class _SplashScreenState extends State<SplashScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(AppAssets.splashWomen, height: 220),
+              Image.asset(AppAssets.splashWomen, height: 300),
 
               const SizedBox(height: 48),
 
-              SvgPicture.asset(AppAssets.splashTextStyle, height: 36),
+              Image.asset(AppAssets.splashTextStyle, height: 120),
             ],
           ),
         ),
