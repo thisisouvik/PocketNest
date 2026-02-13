@@ -570,7 +570,7 @@ class _HomeTabState extends State<_HomeTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Your progress',
+                  'Your Growth Journey',
                   style: TextStyle(
                     fontFamily: 'Alkalami',
                     fontSize: 18,
@@ -578,34 +578,88 @@ class _HomeTabState extends State<_HomeTab> {
                     color: AppTheme.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  '${(_progressValue * 100).toStringAsFixed(0)}% of your weekly check-ins done',
-                  style: const TextStyle(
+                const SizedBox(height: 6),
+                const Text(
+                  'Track your progress through the stages.',
+                  style: TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: AppTheme.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 14),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: _progressValue,
-                    minHeight: 6,
-                    backgroundColor: AppTheme.borderColor.withOpacity(0.3),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppTheme.primaryColor,
+                const SizedBox(height: 16),
+                // Stage 1 Progress
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5E9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.foundation,
+                        size: 18,
+                        color: AppTheme.primaryColor,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Stage 1 — Foundations',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: LinearProgressIndicator(
+                              value: _progressValue,
+                              minHeight: 5,
+                              backgroundColor: AppTheme.borderColor.withOpacity(
+                                0.25,
+                              ),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                AppTheme.primaryColor,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${(_progressValue * 100).toStringAsFixed(0)}% complete',
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 Center(
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigate to Grow tab (index 2)
+                      final homeState = context
+                          .findAncestorStateOfType<_HomeScreenState>();
+                      homeState?.setState(() {
+                        homeState._currentIndex = 2;
+                      });
+                    },
                     child: const Text(
-                      'View details →',
+                      'View full journey →',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
