@@ -13,6 +13,8 @@
   </p>
 
   <p>A premium Flutter mobile application designed for busy parents who want to take control of their family finances in a calm, supportive way.</p>
+  
+  <p>📥 <strong><a href="https://drive.google.com/file/d/14qyLAovaxI8q-VwKZefTjareIQHBude6/view?usp=sharing">Download PocketNest APK</a></strong></p>
 </div>
 
 ---
@@ -603,18 +605,18 @@ flutter clean && flutter pub get && flutter run
 ## 🔮 Future Updates (Post-MVP)
 
 ### Phase 2: Enhanced Financial Tools
+- � **Push Notifications** - Saving tips, growth opportunities, and financial reminders delivered directly to users
 - 📊 **Budget Tracker** - Monthly budget creation and tracking
 - 💳 **Expense Categories** - Automatic categorization with AI
 - 📈 **Spending Trends** - Visual charts and insights
-- 🏦 **Bank Account Linking** - Plaid/TrueLayer integration
 - 🎯 **Savings Goals** - Progress tracking with milestones
-- 💰 **Bill Reminders** - Smart payment notifications
+- 🏦 **Bank Account Linking** - Plaid/TrueLayer integration
 
 ### Phase 3: Advanced Features
 - 🤖 **AI Financial Coach** - Conversational money guidance
 - 👨‍👩‍👧‍👦 **Family Sharing** - Multi-user household accounts
 - 📱 **Widget Support** - Home screen widgets for quick insights
-- 🔔 **Smart Notifications** - Context-aware money tips
+- 🎨 **UI Enhancements** - Improved animations, transitions, and user experience
 - 🏆 **Achievement System** - Gamification and badges
 - 📊 **Custom Reports** - Export financial data (PDF/CSV)
 
@@ -635,6 +637,7 @@ flutter clean && flutter pub get && flutter run
 - 🤝 **Partner Offers** - Exclusive deals from financial partners
 
 ### Technical Improvements
+- 📈 **Infrastructure Scalability** - Optimized backend for growing user base
 - ⚡ **Offline Mode** - Local data sync
 - 🌐 **Web Version** - Progressive Web App (PWA)
 - 🖥️ **Desktop Apps** - Windows/macOS/Linux support
