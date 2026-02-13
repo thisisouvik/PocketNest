@@ -866,7 +866,7 @@ For complete license information, see the [LICENSE](LICENSE) file.
 
 ---
 
-## �🙏 Acknowledgments
+## 🙏 Acknowledgments
 
 - Flutter team for the amazing framework
 - Supabase for backend infrastructure
@@ -877,7 +877,7 @@ For complete license information, see the [LICENSE](LICENSE) file.
 ---
 
 <div align="center">
-  <p>Made with ❤️by for busy parents managing family finances</p>
+  <p>Made with ❤️ for busy parents managing family finances</p>
   <p>
     <a href="https://github.com/yourusername/pocketnest">⭐ Star this repo</a> •
     <a href="https://github.com/yourusername/pocketnest/issues">🐛 Report Bug</a> •
