@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
+import 'package:pocketnest/features/premium/screens/premium_paywall_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GrowTab extends StatefulWidget {
@@ -424,10 +425,10 @@ class _GrowTabState extends State<GrowTab> with TickerProviderStateMixin {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Advanced growth coming soon!'),
-                        duration: Duration(seconds: 2),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const PremiumPaywallScreen(source: 'grow_stage3'),
                       ),
                     );
                   },
@@ -1112,10 +1113,10 @@ class _PremiumBlueprintPreview extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Premium features coming soon!'),
-                    duration: Duration(seconds: 2),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const PremiumPaywallScreen(source: 'grow_blueprint'),
                   ),
                 );
               },

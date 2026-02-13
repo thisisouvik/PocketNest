@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
+import 'package:pocketnest/features/premium/screens/premium_paywall_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CommunityTab extends StatefulWidget {
@@ -297,7 +298,14 @@ class _CommunityTabState extends State<CommunityTab> {
             ),
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const PremiumPaywallScreen(source: 'community'),
+                ),
+              );
+            },
             style: TextButton.styleFrom(
               foregroundColor: AppTheme.primaryColor,
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

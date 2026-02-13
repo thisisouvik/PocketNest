@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
+import 'package:pocketnest/core/services/revenuecat_service.dart';
+import 'package:pocketnest/features/premium/screens/premium_paywall_screen.dart';
 import 'package:pocketnest/features/onboarding/screens/onboarding_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,11 +20,24 @@ class _ProfileTabState extends State<ProfileTab> {
   Map<String, dynamic>? _onboardingData;
   bool _notificationsEnabled = true;
   bool _autoRefreshEnabled = true;
+  late final VoidCallback _customerInfoListener;
 
   @override
   void initState() {
     super.initState();
+    _customerInfoListener = () {
+      if (mounted) {
+        setState(() {});
+      }
+    };
+    RevenueCatService.customerInfo.addListener(_customerInfoListener);
     _loadProfileData();
+  }
+
+  @override
+  void dispose() {
+    RevenueCatService.customerInfo.removeListener(_customerInfoListener);
+    super.dispose();
   }
 
   Future<void> _loadProfileData() async {
@@ -96,8 +111,19 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   bool _isPremium() {
+    if (RevenueCatService.isPremium) {
+      return true;
+    }
     final value = _profile?['is_premium'];
     return value is bool ? value : false;
+  }
+
+  Future<void> _openPaywall() async {
+    await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => const PremiumPaywallScreen(source: 'profile'),
+      ),
+    );
   }
 
   Future<void> _updateSetting(String field, bool value) async {
@@ -417,22 +443,14 @@ class _ProfileTabState extends State<ProfileTab> {
                           _ActionRow(
                             label: 'Manage subscription',
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Manage subscription soon.'),
-                                ),
-                              );
+                              RevenueCatService.presentCustomerCenter();
                             },
                           ),
                           _ActionRow(
                             label: 'Restore purchase',
                             isLast: true,
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Restore purchase soon.'),
-                                ),
-                              );
+                              RevenueCatService.restorePurchases();
                             },
                           ),
                         ],
@@ -454,13 +472,7 @@ class _ProfileTabState extends State<ProfileTab> {
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Premium details soon.'),
-                                  ),
-                                );
-                              },
+                              onPressed: _openPaywall,
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
                                   color: AppTheme.borderColor.withOpacity(0.6),

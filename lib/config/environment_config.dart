@@ -17,6 +17,10 @@ class EnvironmentConfig {
     return dotenv.env['GROQ_API_KEY'] ?? '';
   }
 
+  static String get revenueCatApiKey {
+    return dotenv.env['REVENUECAT_API_KEY'] ?? '';
+  }
+
   static bool isProduction() {
     return dotenv.env['ENVIRONMENT'] == 'production';
   }

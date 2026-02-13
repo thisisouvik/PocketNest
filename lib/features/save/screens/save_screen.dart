@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
+import 'package:pocketnest/features/premium/screens/premium_paywall_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SaveTab extends StatefulWidget {
@@ -265,10 +266,10 @@ class _SaveTabState extends State<SaveTab> {
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Premium features coming soon!'),
-                            duration: Duration(seconds: 2),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const PremiumPaywallScreen(source: 'save'),
                           ),
                         );
                       },

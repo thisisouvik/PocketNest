@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pocketnest/config/supabase_config.dart';
 import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
+import 'package:pocketnest/core/services/revenuecat_service.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/features/auth/screens/auth_screen.dart';
 import 'package:pocketnest/features/home/screens/home_screen.dart';
@@ -15,6 +16,7 @@ void main() async {
   await dotenv.load(fileName: '.env');
 
   await SupabaseService.initialize();
+  await RevenueCatService.initialize();
 
   runApp(
     MultiBlocProvider(

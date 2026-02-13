@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocketnest/core/services/revenuecat_service.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/utils/groq_ai_utils.dart';
 import 'package:pocketnest/features/community/screens/community_screen.dart';
@@ -19,6 +20,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    RevenueCatService.logIn(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
