@@ -72,6 +72,17 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  
+  # Launcher icons
+  flutter_launcher_icons: ^0.13.1
+
+# Launcher icon configuration
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo/pocketnest_logo.png"
+  adaptive_icon_background: "#F5F1ED"
+  adaptive_icon_foreground: "assets/images/logo/pocketnest_logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -89,7 +100,7 @@ flutter:
     - assets/
     - assets/images/
     - assets/images/branding/
-    - assets/icons/
+    - assets/images/logo/
     - assets/images/splash/
     - .env
 
