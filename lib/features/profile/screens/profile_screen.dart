@@ -141,6 +141,17 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
+  Future<void> _logout() async {
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logout failed.')));
+    }
+  }
+
   String _getOnboardingValue(String key) {
     if (_onboardingData == null) return 'Not set';
     final entry = _onboardingData![key];
@@ -282,6 +293,13 @@ class _ProfileTabState extends State<ProfileTab> {
                               ),
                             ),
                           ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          onPressed: _logout,
+                          icon: const Icon(Icons.logout),
+                          color: AppTheme.textSecondary,
+                          tooltip: 'Log out',
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
