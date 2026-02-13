@@ -542,6 +542,14 @@ class _ProfileTabState extends State<ProfileTab> {
                       },
                     ),
                     _ActionRow(
+                      label: 'Help & Support',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Support soon.')),
+                        );
+                      },
+                    ),
+                    _ActionRow(
                       label: 'About PocketNest',
                       isLast: true,
                       onTap: () {
