@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketnest/core/theme/app_theme.dart';
 import 'package:pocketnest/core/services/revenuecat_service.dart';
 import 'package:pocketnest/features/premium/screens/premium_paywall_screen.dart';
 import 'package:pocketnest/features/onboarding/screens/onboarding_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pocketnest/core/navigation/cubit/app_flow_cubit.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key, required this.userId});
@@ -143,7 +145,14 @@ class _ProfileTabState extends State<ProfileTab> {
 
   Future<void> _logout() async {
     try {
-      await Supabase.instance.client.auth.signOut();
+      try {
+        await RevenueCatService.logOut();
+      } catch (_) {
+        // Ignore RC logout errors so user can still sign out.
+      }
+
+      if (!mounted) return;
+      await context.read<AppFlowCubit>().logout();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
